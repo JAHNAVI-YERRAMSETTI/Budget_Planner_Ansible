@@ -1,5 +1,5 @@
 package com.bps.dto;
 
-public class UserDto {
+public class GoalDto {
 
 }
