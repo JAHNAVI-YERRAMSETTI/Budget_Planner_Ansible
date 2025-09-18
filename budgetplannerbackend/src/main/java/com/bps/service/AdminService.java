@@ -1,17 +1,12 @@
 package com.bps.service;
 
-import java.util.List;
-
 import com.bps.model.Admin;
 import com.bps.model.User;
+import java.util.List;
 
 public interface AdminService {
-
-    public Admin checkAdminLogin(String username, String password);
-
-    public List<User> displayUsers();
-    public String deleteUser(int uid); 
-
- 
-    public long countUsers();
+    Admin checkAdminLogin(String username, String password);
+    List<User> getAllUsers();
+    String deleteUser(int id);
+    // Add more management functions if needed
 }

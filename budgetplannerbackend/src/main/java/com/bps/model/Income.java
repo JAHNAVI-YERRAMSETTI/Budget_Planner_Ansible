@@ -1,30 +1,37 @@
 package com.bps.model;
 
-import java.time.LocalDate;
+import jakarta.persistence.*;
+import java.util.Date;
 
-// simple DTO, not @Entity
+@Entity
+@Table(name = "income")
 public class Income {
-    private int userId;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    private String source;
     private double amount;
-    private String category;
-    private String description;
-    private LocalDate date;
 
-    public Income() {}
+    @Temporal(TemporalType.DATE)
+    private Date incomeDate;
 
-    // getters and setters
-    public int getUserId() { return userId; }
-    public void setUserId(int userId) { this.userId = userId; }
+    private int userId; // foreign key to User
+
+    // Getters and setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getSource() { return source; }
+    public void setSource(String source) { this.source = source; }
 
     public double getAmount() { return amount; }
     public void setAmount(double amount) { this.amount = amount; }
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public Date getIncomeDate() { return incomeDate; }
+    public void setIncomeDate(Date incomeDate) { this.incomeDate = incomeDate; }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public LocalDate getDate() { return date; }
-    public void setDate(LocalDate date) { this.date = date; }
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
 }

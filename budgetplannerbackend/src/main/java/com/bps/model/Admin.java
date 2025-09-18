@@ -1,36 +1,30 @@
 package com.bps.model;
 
-import jakarta.persistence.Column;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "admin_table")
+@Table(name = "admin")
 public class Admin {
 
     @Id
-    @Column(length = 50)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(length = 50, nullable = false)
+    @Column(nullable = false)
     private String password;
 
-    // Getters and Setters
-    public String getUsername() {
-        return username;
-    }
+    // Additional fields if needed
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    // Getters and setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    public String getPassword() {
-        return password;
-    }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 }
