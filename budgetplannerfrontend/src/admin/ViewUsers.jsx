@@ -12,7 +12,7 @@ const ViewUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`${config.url}/admin/users`);
+      const response = await fetch(`${config.url}/users`);
       if (response.ok) {
         const userData = await response.json();
         setUsers(userData);
@@ -29,7 +29,7 @@ const ViewUsers = () => {
   const handleDeleteUser = async (userId) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        const response = await fetch(`${config.url}/admin/deleteUser/${userId}`, {
+        const response = await fetch(`${config.url}/users/${userId}`, {
           method: 'DELETE'
         });
         

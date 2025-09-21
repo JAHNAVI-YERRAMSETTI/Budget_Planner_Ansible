@@ -4,7 +4,8 @@ import com.bps.model.MonthlyReport;
 import java.util.List;
 
 public interface ReportService {
-    List<MonthlyReport> getReportsByUser(int userid);
-    String addMonthlyReport(MonthlyReport report);
-    String deleteReport(int reportId);
+    MonthlyReport saveReport(MonthlyReport report);
+    MonthlyReport findById(Long id);
+    List<MonthlyReport> findAll();
+    List<MonthlyReport> findByUserId(Long userId);
 }

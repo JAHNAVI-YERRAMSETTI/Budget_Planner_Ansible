@@ -18,7 +18,14 @@ const UserNavBar = ({ onLogout }) => {
       <ul style={styles.links}>
         <li><NavLink to="/user/dashboard" style={styles.link}>Dashboard</NavLink></li>
         <li><NavLink to="/user/budgets" style={styles.link}>Budgets</NavLink></li>
-        <li><NavLink to="/user/goals" style={styles.link}>Goals</NavLink></li>
+        <li><NavLink to="/user/expense" style={styles.link}>Expenses</NavLink></li>
+        <li><NavLink to="/user/income" style={styles.link}>Income</NavLink></li>
+        <li><NavLink to="/user/category" style={styles.link}>Categories</NavLink></li>
+        <li><NavLink to="/user/transaction" style={styles.link}>Transactions</NavLink></li>
+        <li><NavLink to="/user/retailer" style={styles.link}>Retailers</NavLink></li>
+        <li><NavLink to="/user/analysis" style={styles.link}>Analysis</NavLink></li>
+        <li><NavLink to="/user/monthly-report" style={styles.link}>Monthly Report</NavLink></li>
+        <li><NavLink to="/user/alert" style={styles.link}>Alerts</NavLink></li>
         <li><NavLink to="/user/reports" style={styles.link}>Reports</NavLink></li>
         <li><NavLink to="/user/notifications" style={styles.link}>Notifications</NavLink></li>
       </ul>

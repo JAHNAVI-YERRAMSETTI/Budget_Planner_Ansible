@@ -1,38 +1,84 @@
 package com.bps.service;
 
+import com.bps.model.*;
+import com.bps.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.bps.model.Expense;
-import com.bps.repository.ExpenseRepository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ExpenseServiceImpl implements ExpenseService {
 
     @Autowired
     private ExpenseRepository expenseRepository;
+    @Autowired
+    private BudgetGoalRepository budgetGoalRepository;
+    @Autowired
+    private AlertRepository alertRepository;
 
     @Override
-    public String addExpense(Expense expense) {
-        expenseRepository.save(expense);
-        return "Expense added successfully";
+    public Expense saveExpense(Expense expense) {
+        if (expense.getUser() == null || expense.getCategory() == null) {
+            throw new IllegalArgumentException("User and Category are required for Expense");
+        }
+        if (expense.getExpenseDate() == null) {
+            expense.setExpenseDate(LocalDate.now());
+        }
+        Expense savedExpense = expenseRepository.save(expense);
+        checkBudgetGoals(savedExpense);
+        return savedExpense;
     }
 
     @Override
-    public List<Expense> getUserExpenses(int userId) {
-        return expenseRepository.findByUserId(userId);
+    public Expense findById(Long id) {
+        return expenseRepository.findById(id).orElse(null);
     }
 
     @Override
-    public String updateExpense(Expense expense) {
-        expenseRepository.save(expense);
-        return "Expense updated successfully";
+    public List<Expense> findAll() {
+        return expenseRepository.findAll();
     }
 
     @Override
-    public String deleteExpense(int expenseId) {
-        expenseRepository.deleteById(expenseId);
-        return "Expense deleted successfully";
+    public List<Expense> findByUserId(Long userId) {
+        LocalDate startOfMonth = LocalDate.now().withDayOfMonth(1);
+        LocalDate endOfMonth = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
+        return expenseRepository.findByUser_IdAndExpenseDateBetween(userId, startOfMonth, endOfMonth);
+    }
+
+    @Override
+    public void checkBudgetGoals(Expense expense) {
+        if (expense.getCategory() != null && expense.getUser() != null) {
+            LocalDate monthStart = expense.getExpenseDate().withDayOfMonth(1);
+            LocalDate monthEnd = expense.getExpenseDate().with(TemporalAdjusters.lastDayOfMonth());
+
+            Optional<BudgetGoal> optionalGoal = budgetGoalRepository.findByUser_IdAndCategory_Id(
+                    expense.getUser().getId(), expense.getCategory().getId());
+
+            if (optionalGoal.isPresent()) {
+                BudgetGoal goal = optionalGoal.get();
+                List<Expense> monthExpenses = expenseRepository.findByUser_IdAndCategory_IdAndExpenseDateBetween(
+                        expense.getUser().getId(), expense.getCategory().getId(), monthStart, monthEnd);
+                double totalSpent = monthExpenses.stream().mapToDouble(Expense::getAmount).sum();
+
+                double percentageUsed = goal.getMonthlyLimit() > 0 ? (totalSpent / goal.getMonthlyLimit()) * 100 : 0;
+
+                if (percentageUsed > goal.getWarningThreshold()) {
+                    Alert alert = new Alert();
+                    alert.setUser(expense.getUser());
+                    alert.setMessage(String.format("Category '%s' has reached %.2f%% of its budget limit.", 
+                            expense.getCategory().getName(), percentageUsed));
+                    alert.setType("BUDGET_WARNING");
+                    alert.setTimestamp(LocalDateTime.now());
+                    alert.setResolved(false);
+                    alertRepository.save(alert);
+                }
+            }
+        }
     }
 }

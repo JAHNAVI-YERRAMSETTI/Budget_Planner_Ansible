@@ -1,40 +1,50 @@
 package com.bps.controller;
 
+import com.bps.model.Admin;
+import com.bps.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
-import com.bps.model.Admin;
-import com.bps.model.User;
-import com.bps.service.AdminService;
-
-@CrossOrigin("*")
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/admins")
+@CrossOrigin(origins = "*") // allow frontend to call backend
 public class AdminController {
 
     @Autowired
     private AdminService adminService;
 
+    // Register new admin
+    @PostMapping
+    public Admin saveAdmin(@RequestBody Admin admin) {
+        return adminService.saveAdmin(admin);
+    }
+
+    // Get admin by ID
+    @GetMapping("/{id}")
+    public Admin getAdmin(@PathVariable Long id) {
+        return adminService.findById(id);
+    }
+
+    // Get all admins
+    @GetMapping
+    public List<Admin> getAllAdmins() {
+        return adminService.findAll();
+    }
+
+    // ✅ Login endpoint (returns admin JSON without password)
     @PostMapping("/login")
-    public ResponseEntity<?> checkAdminLogin(@RequestBody Admin admin) {
-        Admin a = adminService.checkAdminLogin(admin.getUsername(), admin.getPassword());
-        if (a != null) return ResponseEntity.ok(a);
-        else return ResponseEntity.status(401).body("Invalid credentials");
-    }
+    public ResponseEntity<?> login(@RequestBody Admin admin) {
+        Admin existingAdmin = adminService.findByUsername(admin.getUsername());
 
-    @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = adminService.getAllUsers();
-        return ResponseEntity.ok(users);
+        if (existingAdmin != null && existingAdmin.getPassword().equals(admin.getPassword())) {
+            // Don’t expose password to frontend
+            existingAdmin.setPassword(null);
+            return ResponseEntity.ok(existingAdmin);
+        } else {
+            return ResponseEntity.status(401).body("Invalid username or password");
+        }
     }
-
-    @DeleteMapping("/deleteUser/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable int id) {
-        String msg = adminService.deleteUser(id);
-        return ResponseEntity.ok(msg);
-    }
-
-    // Add further endpoints: manage categories, etc, if needed
 }

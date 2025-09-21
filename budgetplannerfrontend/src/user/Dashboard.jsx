@@ -8,6 +8,8 @@ const Dashboard = () => {
   const [month, setMonth] = useState(() => new Date().toISOString().slice(0, 7))
   const [summary, setSummary] = useState(null)
   const [trends, setTrends] = useState(null)
+  const [budgets, setBudgets] = useState([])
+  const [budgetAlerts, setBudgetAlerts] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -19,23 +21,93 @@ const Dashboard = () => {
       try {
         setLoading(true)
         setError('')
-        const [s, t] = await Promise.all([
-          fetch(`${config.url}/analytics/summary?month=${encodeURIComponent(month)}`, {
+        const [incomes, expenses, reports, budgetsData] = await Promise.all([
+          fetch(`${config.url}/incomes`, {
             headers: {
               'Authorization': `Bearer ${user.id}`,
               'Content-Type': 'application/json'
             }
-          }).then(res => res.ok ? res.json() : { income: 0, expenses: 0 }),
-          fetch(`${config.url}/analytics/trends?months=6`, {
+          }).then(res => res.ok ? res.json() : []),
+          fetch(`${config.url}/expenses`, {
+            headers: {
+              'Authorization': `Bearer ${user.id}`,
+              'Content-Type': 'application/json'
+            }
+          }).then(res => res.ok ? res.json() : []),
+          fetch(`${config.url}/reports`, {
+            headers: {
+              'Authorization': `Bearer ${user.id}`,
+              'Content-Type': 'application/json'
+            }
+          }).then(res => res.ok ? res.json() : []),
+          fetch(`${config.url}/budgetgoal/user/${user.id}`, {
             headers: {
               'Authorization': `Bearer ${user.id}`,
               'Content-Type': 'application/json'
             }
           }).then(res => res.ok ? res.json() : [])
         ])
+        
+        // Calculate summary for the selected month
+        const [year, monthNum] = month.split('-').map(Number)
+        const monthStart = new Date(year, monthNum - 1, 1)
+        const monthEnd = new Date(year, monthNum, 0)
+        
+        const monthIncomes = incomes.filter(income => {
+          const incomeDate = new Date(income.date)
+          return incomeDate >= monthStart && incomeDate <= monthEnd
+        })
+        
+        const monthExpenses = expenses.filter(expense => {
+          const expenseDate = new Date(expense.expenseDate)
+          return expenseDate >= monthStart && expenseDate <= monthEnd
+        })
+        
+        const totalIncome = monthIncomes.reduce((sum, income) => sum + (income.amount || 0), 0)
+        const totalExpenses = monthExpenses.reduce((sum, expense) => sum + (expense.amount || 0), 0)
+        
+        // Generate budget alerts
+        const alerts = []
+        budgetsData.forEach(budget => {
+          const budgetStart = new Date(budget.startDate)
+          const budgetEnd = new Date(budget.endDate)
+          
+          if (monthStart <= budgetEnd && monthEnd >= budgetStart) {
+            const categoryName = budget.category?.name || 'Uncategorized'
+            const categoryExpenses = expenses.filter(expense => {
+              const expenseDate = new Date(expense.expenseDate)
+              return expense.category?.name === categoryName && 
+                     expenseDate >= monthStart && 
+                     expenseDate <= monthEnd
+            })
+            
+            const totalSpent = categoryExpenses.reduce((sum, expense) => sum + expense.amount, 0)
+            const spendingPercentage = (totalSpent / budget.targetAmount) * 100
+            const warningThreshold = budget.warningThreshold || 70
+            
+            if (spendingPercentage >= warningThreshold) {
+              alerts.push({
+                category: categoryName,
+                spent: totalSpent,
+                budget: budget.targetAmount,
+                percentage: spendingPercentage,
+                isOverBudget: spendingPercentage >= 100
+              })
+            }
+          }
+        })
+
+        const s = { income: totalIncome, expenses: totalExpenses }
+        const t = reports.slice(0, 6).map(report => ({
+          month: report.month ? new Date(report.month).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A',
+          income: report.totalIncome || 0,
+          expenses: report.totalExpense || 0
+        }))
         if (mounted) {
           setSummary(s)
           setTrends(t)
+          setBudgets(budgetsData)
+          setBudgetAlerts(alerts)
         }
       } catch (e) {
         if (mounted) setError(String(e.message || e))
@@ -87,6 +159,109 @@ const Dashboard = () => {
             ))}
           </div>
         )}
+
+        {/* Budget Alerts */}
+        {budgetAlerts.length > 0 && (
+          <div style={{ marginTop: 24 }}>
+            <h3 style={{ color: '#dc3545' }}>⚠️ Budget Alerts</h3>
+            <div style={{ display: 'grid', gap: 12 }}>
+              {budgetAlerts.map((alert, index) => (
+                <div key={index} style={{ 
+                  padding: 12, 
+                  backgroundColor: alert.isOverBudget ? '#ffeaea' : '#fff3cd', 
+                  borderRadius: 8, 
+                  border: `1px solid ${alert.isOverBudget ? '#dc3545' : '#ffc107'}`,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <div>
+                    <strong style={{ color: alert.isOverBudget ? '#dc3545' : '#856404' }}>
+                      {alert.category}
+                    </strong>
+                    <div style={{ fontSize: '14px', color: '#6c757d' }}>
+                      ${alert.spent.toFixed(2)} of ${alert.budget.toFixed(2)} ({alert.percentage.toFixed(1)}%)
+                    </div>
+                  </div>
+                  <span style={{ 
+                    color: alert.isOverBudget ? '#dc3545' : '#856404',
+                    fontWeight: 'bold',
+                    fontSize: '14px'
+                  }}>
+                    {alert.isOverBudget ? 'OVER BUDGET' : 'WARNING'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Quick Actions */}
+        <div style={{ marginTop: 24 }}>
+          <h3>Quick Actions</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+            <button 
+              onClick={() => navigate('/user/expense')}
+              style={{ 
+                padding: 16, 
+                backgroundColor: '#dc3545', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: 8, 
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: 'bold'
+              }}
+            >
+              Add Expense
+            </button>
+            <button 
+              onClick={() => navigate('/user/income')}
+              style={{ 
+                padding: 16, 
+                backgroundColor: '#28a745', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: 8, 
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: 'bold'
+              }}
+            >
+              Add Income
+            </button>
+            <button 
+              onClick={() => navigate('/user/budgets')}
+              style={{ 
+                padding: 16, 
+                backgroundColor: '#17a2b8', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: 8, 
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: 'bold'
+              }}
+            >
+              Manage Budgets
+            </button>
+            <button 
+              onClick={() => navigate('/user/analysis')}
+              style={{ 
+                padding: 16, 
+                backgroundColor: '#6f42c1', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: 8, 
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: 'bold'
+              }}
+            >
+              View Analysis
+            </button>
+          </div>
+        </div>
 
         {trends && (
           <div style={{ marginTop: 24 }}>

@@ -1,10 +1,12 @@
 package com.bps.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.bps.model.Income;
 import com.bps.repository.IncomeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 @Service
@@ -14,25 +16,30 @@ public class IncomeServiceImpl implements IncomeService {
     private IncomeRepository incomeRepository;
 
     @Override
-    public String addIncome(Income income) {
-        incomeRepository.save(income);
-        return "Income added successfully";
+    public Income saveIncome(Income income) {
+        if (income.getUser() == null) {
+            throw new IllegalArgumentException("User is required for Income");
+        }
+        if (income.getDate() == null) {
+            income.setDate(LocalDate.now());
+        }
+        return incomeRepository.save(income);
     }
 
     @Override
-    public List<Income> getUserIncome(int userId) {
-        return incomeRepository.findByUserId(userId);
+    public Income findById(Long id) {
+        return incomeRepository.findById(id).orElse(null);
     }
 
     @Override
-    public String updateIncome(Income income) {
-        incomeRepository.save(income);
-        return "Income updated successfully";
+    public List<Income> findAll() {
+        return incomeRepository.findAll();
     }
 
     @Override
-    public String deleteIncome(int incomeId) {
-        incomeRepository.deleteById(incomeId);
-        return "Income deleted successfully";
+    public List<Income> findByUserId(Long userId) {
+        LocalDate startOfMonth = LocalDate.now().withDayOfMonth(1);
+        LocalDate endOfMonth = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
+        return incomeRepository.findByUser_IdAndDateBetween(userId, startOfMonth, endOfMonth);
     }
 }

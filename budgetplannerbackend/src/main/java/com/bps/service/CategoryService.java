@@ -4,8 +4,9 @@ import com.bps.model.Category;
 import java.util.List;
 
 public interface CategoryService {
-    String addCategory(Category category);
-    List<Category> getCategoriesByUser(int userid);
-    String updateCategory(Category category);
-    String deleteCategory(int categoryId);
+    Category saveCategory(Category category);
+    Category findById(Long id);
+    List<Category> findAll();
+    List<Category> findByUserId(Long userId);
+    void deleteById(Long id);
 }

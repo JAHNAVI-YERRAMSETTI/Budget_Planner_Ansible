@@ -24,7 +24,7 @@ const AdminLogin = () => {
     setLoading(true)
 
     try {
-      const response = await fetch(`${config.url}/admin/login`, {
+      const response = await fetch(`${config.url}/admins/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

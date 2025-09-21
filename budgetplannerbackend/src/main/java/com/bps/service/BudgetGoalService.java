@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface BudgetGoalService {
     String addBudgetGoal(BudgetGoal budgetGoal);
-    List<BudgetGoal> getBudgetGoalsByUser(int userid);
+    List<BudgetGoal> getBudgetGoalsByUser(Long userId);
     String updateBudgetGoal(BudgetGoal budgetGoal);
-    String deleteBudgetGoal(int budgetGoalId);
+    String deleteBudgetGoal(Long budgetGoalId);
 }

@@ -1,37 +1,52 @@
 package com.bps.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
-@Table(name = "income")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Income {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
-    private String source;
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JsonBackReference(value = "user-income")  // Matches User's managed ref
+    private User user;
+
     private double amount;
+    private LocalDate date;
+    private String source;
+    private String description;
 
-    @Temporal(TemporalType.DATE)
-    private Date incomeDate;
+    public Income() {}
 
-    private int userId; // foreign key to User
+    // JsonCreator for deserialization from ID stub {id: X}
+    @JsonCreator
+    public Income(@JsonProperty("id") Long id) {
+        this.id = id;
+    }
 
-    // Getters and setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
-
-    public String getSource() { return source; }
-    public void setSource(String source) { this.source = source; }
-
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+    
     public double getAmount() { return amount; }
     public void setAmount(double amount) { this.amount = amount; }
-
-    public Date getIncomeDate() { return incomeDate; }
-    public void setIncomeDate(Date incomeDate) { this.incomeDate = incomeDate; }
-
-    public int getUserId() { return userId; }
-    public void setUserId(int userId) { this.userId = userId; }
+    
+    public LocalDate getDate() { return date; }
+    public void setDate(LocalDate date) { this.date = date; }
+    
+    public String getSource() { return source; }
+    public void setSource(String source) { this.source = source; }
+    
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 }

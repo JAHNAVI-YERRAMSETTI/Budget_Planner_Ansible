@@ -1,9 +1,9 @@
 package com.bps.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.bps.model.Category;
 import com.bps.repository.CategoryRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -14,25 +14,28 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryRepository categoryRepository;
 
     @Override
-    public String addCategory(Category category) {
-        categoryRepository.save(category);
-        return "Category added successfully";
+    public Category saveCategory(Category category) {
+        return categoryRepository.save(category);
     }
 
     @Override
-    public List<Category> getCategoriesByUser(int userid) {
-        return categoryRepository.findByUserid(userid);
+    public Category findById(Long id) {
+        return categoryRepository.findById(id).orElse(null);
     }
 
     @Override
-    public String updateCategory(Category category) {
-        categoryRepository.save(category);
-        return "Category updated successfully";
+    public List<Category> findAll() {
+        return categoryRepository.findAllOrderByName();
     }
 
     @Override
-    public String deleteCategory(int categoryId) {
-        categoryRepository.deleteById(categoryId);
-        return "Category deleted successfully";
+    public List<Category> findByUserId(Long userId) {
+        // Assuming categories are not directly tied to users, return all for now
+        return findAll();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        categoryRepository.deleteById(id);
     }
 }

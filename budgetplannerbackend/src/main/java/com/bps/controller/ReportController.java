@@ -1,37 +1,44 @@
 package com.bps.controller;
 
+import com.bps.model.MonthlyReport;
+import com.bps.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.bps.model.MonthlyReport;
-import com.bps.service.ReportService;
 
 import java.util.List;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/report")
+@RequestMapping("/api/reports")
 public class ReportController {
-
     @Autowired
     private ReportService reportService;
 
-    @GetMapping("/user/{userid}")
-    public ResponseEntity<List<MonthlyReport>> getReportsByUser(@PathVariable int userid) {
-        List<MonthlyReport> reports = reportService.getReportsByUser(userid);
-        return ResponseEntity.ok(reports);
+    @PostMapping
+    public ResponseEntity<MonthlyReport> saveReport(@RequestBody MonthlyReport report) {
+        MonthlyReport saved = reportService.saveReport(report);
+        return ResponseEntity.ok(saved);
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<String> addReport(@RequestBody MonthlyReport report) {
-        String result = reportService.addMonthlyReport(report);
-        return ResponseEntity.ok(result);
+    @GetMapping("/{id}")
+    public ResponseEntity<MonthlyReport> getReport(@PathVariable Long id) {
+        MonthlyReport report = reportService.findById(id);
+        return report != null ? ResponseEntity.ok(report) : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/delete/{reportId}")
-    public ResponseEntity<String> deleteReport(@PathVariable int reportId) {
-        String result = reportService.deleteReport(reportId);
-        return ResponseEntity.ok(result);
+    @GetMapping
+    public ResponseEntity<List<MonthlyReport>> getAllReports() {
+        return ResponseEntity.ok(reportService.findAll());
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<MonthlyReport>> getReportsByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(reportService.findByUserId(userId));
+    }
+
+    @GetMapping("/comparison/user/{userId}")
+    public ResponseEntity<List<MonthlyReport>> getMonthlyComparisons(@PathVariable Long userId) {
+        return ResponseEntity.ok(reportService.findByUserId(userId));
     }
 }

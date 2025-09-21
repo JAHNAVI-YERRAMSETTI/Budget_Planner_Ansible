@@ -1,27 +1,56 @@
 package com.bps.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
-@Table(name = "category")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Category {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
-    @Column(length = 50, nullable = false)
-    private String categoryname;
+    private String name;
 
-    private int userid; // foreign key to User
+    @OneToMany(mappedBy = "category")
+    @JsonManagedReference("category-expense")
+    private List<Expense> expenses;
 
-    // Getters and setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    @OneToMany(mappedBy = "category")
+    @JsonManagedReference("category-transaction")
+    private List<Transaction> transactions;
 
-    public String getCategoryname() { return categoryname; }
-    public void setCategoryname(String categoryname) { this.categoryname = categoryname; }
+    @OneToMany(mappedBy = "category")
+    @JsonManagedReference("category-budgetgoal")
+    private List<BudgetGoal> budgetGoals;
 
-    public int getUserid() { return userid; }
-    public void setUserid(int userid) { this.userid = userid; }
+    // Default constructor
+    public Category() {}
+
+    // Constructor for full init
+    public Category(String name) {
+        this.name = name;
+    }
+
+    // JsonCreator for deserialization from ID stub {id: X}
+    @JsonCreator
+    public Category(@JsonProperty("id") Long id) {
+        this.id = id;
+    }
+
+    // Getters and Setters remain the same
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public List<Expense> getExpenses() { return expenses; }
+    public void setExpenses(List<Expense> expenses) { this.expenses = expenses; }
+    public List<Transaction> getTransactions() { return transactions; }
+    public void setTransactions(List<Transaction> transactions) { this.transactions = transactions; }
+    public List<BudgetGoal> getBudgetGoals() { return budgetGoals; }
+    public void setBudgetGoals(List<BudgetGoal> budgetGoals) { this.budgetGoals = budgetGoals; }
 }

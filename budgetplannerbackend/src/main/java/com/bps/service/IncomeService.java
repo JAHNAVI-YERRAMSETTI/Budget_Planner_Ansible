@@ -4,8 +4,8 @@ import com.bps.model.Income;
 import java.util.List;
 
 public interface IncomeService {
-    String addIncome(Income income);
-    List<Income> getUserIncome(int userId);
-    String updateIncome(Income income);
-    String deleteIncome(int incomeId);
+    Income saveIncome(Income income);
+    Income findById(Long id);
+    List<Income> findAll();
+    List<Income> findByUserId(Long userId);
 }

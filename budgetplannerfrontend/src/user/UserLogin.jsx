@@ -24,7 +24,7 @@ const UserLogin = () => {
     setLoading(true)
 
     try {
-      const response = await fetch(`${config.url}/user/login`, {
+      const response = await fetch(`${config.url}/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,10 +33,26 @@ const UserLogin = () => {
       })
 
       if (response.ok) {
-        const user = await response.json()
-        localStorage.setItem('user', JSON.stringify(user))
-        localStorage.setItem('userType', 'user')
-        navigate('/user/dashboard')
+        const responseData = await response.json()
+        console.log('Login response:', responseData) // Debug log
+        
+        // Extract user data from the response structure
+        if (responseData.status === 'success' && responseData.user) {
+          const user = responseData.user
+          console.log('Extracted user data:', user) // Debug log
+          
+          localStorage.setItem('user', JSON.stringify(user))
+          localStorage.setItem('userType', 'user')
+          
+          // Store token if available (backend doesn't provide token yet)
+          if (user.token) {
+            localStorage.setItem('token', user.token)
+          }
+          
+          navigate('/user/dashboard')
+        } else {
+          setError(responseData.message || 'Login failed')
+        }
       } else {
         const errorMessage = await response.text()
         setError(errorMessage || 'Invalid Username or Password')

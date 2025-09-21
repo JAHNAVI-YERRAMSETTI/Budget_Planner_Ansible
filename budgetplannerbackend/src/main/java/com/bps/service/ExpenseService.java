@@ -4,8 +4,9 @@ import com.bps.model.Expense;
 import java.util.List;
 
 public interface ExpenseService {
-    String addExpense(Expense expense);
-    List<Expense> getUserExpenses(int userId);
-    String updateExpense(Expense expense);
-    String deleteExpense(int expenseId);
+    Expense saveExpense(Expense expense);
+    Expense findById(Long id);
+    List<Expense> findAll();
+    List<Expense> findByUserId(Long userId);
+    void checkBudgetGoals(Expense expense);
 }

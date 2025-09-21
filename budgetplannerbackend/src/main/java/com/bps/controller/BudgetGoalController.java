@@ -1,43 +1,52 @@
 package com.bps.controller;
 
+import com.bps.model.BudgetGoal;
+import com.bps.service.BudgetGoalService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.bps.model.BudgetGoal;
-import com.bps.service.BudgetGoalService;
-
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/budgetgoal")
+@RequestMapping("/api/budgetgoal")
 public class BudgetGoalController {
-
     @Autowired
     private BudgetGoalService budgetGoalService;
 
-    @PostMapping("/add")
-    public ResponseEntity<String> addBudgetGoal(@RequestBody BudgetGoal budgetGoal) {
-        String result = budgetGoalService.addBudgetGoal(budgetGoal);
-        return ResponseEntity.ok(result);
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> addBudgetGoal(@RequestBody BudgetGoal budgetGoal) {
+        try {
+            String result = budgetGoalService.addBudgetGoal(budgetGoal);
+            return ResponseEntity.ok(Map.of("message", result));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
-    @GetMapping("/user/{userid}")
-    public ResponseEntity<List<BudgetGoal>> getBudgetGoalsByUser(@PathVariable int userid) {
-        List<BudgetGoal> goals = budgetGoalService.getBudgetGoalsByUser(userid);
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<BudgetGoal>> getBudgetGoalsByUser(@PathVariable Long userId) {
+        List<BudgetGoal> goals = budgetGoalService.getBudgetGoalsByUser(userId);
         return ResponseEntity.ok(goals);
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<String> updateBudgetGoal(@RequestBody BudgetGoal budgetGoal) {
-        String result = budgetGoalService.updateBudgetGoal(budgetGoal);
-        return ResponseEntity.ok(result);
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateBudgetGoal(@PathVariable Long id, @RequestBody BudgetGoal budgetGoal) {
+        try {
+            budgetGoal.setId(id);
+            String result = budgetGoalService.updateBudgetGoal(budgetGoal);
+            return ResponseEntity.ok(Map.of("message", result));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
-    @DeleteMapping("/delete/{budgetGoalId}")
-    public ResponseEntity<String> deleteBudgetGoal(@PathVariable int budgetGoalId) {
+    @DeleteMapping("/{budgetGoalId}")
+    public ResponseEntity<?> deleteBudgetGoal(@PathVariable Long budgetGoalId) {
         String result = budgetGoalService.deleteBudgetGoal(budgetGoalId);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(Map.of("message", result));
     }
 }

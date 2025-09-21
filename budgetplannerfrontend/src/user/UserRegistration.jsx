@@ -25,7 +25,7 @@ const UserRegistration = () => {
     setLoading(true)
 
     try {
-      const response = await fetch(`${config.url}/user/register`, {
+      const response = await fetch(`${config.url}/users/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,13 +33,14 @@ const UserRegistration = () => {
         body: JSON.stringify(formData),
       })
 
-      const result = await response.text()
+      const responseData = await response.json()
+      console.log('Registration response:', responseData) // Debug log
       
-      if (response.ok) {
+      if (response.ok && responseData.status === 'success') {
         alert('Registration successful! Please login.')
         navigate('/user/login')
       } else {
-        setError(result || 'Registration failed')
+        setError(responseData.message || 'Registration failed')
       }
     } catch (error) {
       setError('Network error. Please try again.')

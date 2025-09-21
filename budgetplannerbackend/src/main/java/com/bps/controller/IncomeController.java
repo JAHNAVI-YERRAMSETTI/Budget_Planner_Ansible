@@ -1,43 +1,39 @@
 package com.bps.controller;
 
+import com.bps.model.Income;
+import com.bps.service.IncomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.bps.model.Income;
-import com.bps.service.IncomeService;
 
 import java.util.List;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/income")
+@RequestMapping("/api/incomes")
 public class IncomeController {
-
     @Autowired
     private IncomeService incomeService;
 
-    @PostMapping("/add")
-    public ResponseEntity<String> addIncome(@RequestBody Income income) {
-        String result = incomeService.addIncome(income);
-        return ResponseEntity.ok(result);
+    @PostMapping
+    public ResponseEntity<Income> saveIncome(@RequestBody Income income) {
+        Income saved = incomeService.saveIncome(income);
+        return ResponseEntity.ok(saved);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Income> getIncome(@PathVariable Long id) {
+        Income income = incomeService.findById(id);
+        return income != null ? ResponseEntity.ok(income) : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Income>> getAllIncomes() {
+        return ResponseEntity.ok(incomeService.findAll());
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Income>> getIncomeByUser(@PathVariable int userId) {
-        List<Income> incomes = incomeService.getUserIncome(userId);
-        return ResponseEntity.ok(incomes);
-    }
-
-    @PutMapping("/update")
-    public ResponseEntity<String> updateIncome(@RequestBody Income income) {
-        String result = incomeService.updateIncome(income);
-        return ResponseEntity.ok(result);
-    }
-
-    @DeleteMapping("/delete/{incomeId}")
-    public ResponseEntity<String> deleteIncome(@PathVariable int incomeId) {
-        String result = incomeService.deleteIncome(incomeId);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<List<Income>> getIncomesByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(incomeService.findByUserId(userId));
     }
 }

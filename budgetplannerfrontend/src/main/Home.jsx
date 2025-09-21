@@ -27,7 +27,7 @@ const Home = () => {
           <h3>Retailer-to-Category Mapping</h3>
           <p>When you pay a known retailer, we automatically apply your chosen category. You can always change it if needed.</p>
           <div style={{ marginTop: 8 }}>
-            <Link to="/user/goals">Review Goals</Link>
+            <Link to="/user/budgets">Review Budgets</Link>
           </div>
         </section>
       </div>

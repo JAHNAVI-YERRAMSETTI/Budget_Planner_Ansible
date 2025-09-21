@@ -1,43 +1,52 @@
 package com.bps.controller;
 
+import com.bps.model.Category;
+import com.bps.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.bps.model.Category;
-import com.bps.service.CategoryService;
 
 import java.util.List;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/category")
+@RequestMapping("/api/categories")
 public class CategoryController {
-
     @Autowired
     private CategoryService categoryService;
 
-    @PostMapping("/add")
-    public ResponseEntity<String> addCategory(@RequestBody Category category) {
-        String result = categoryService.addCategory(category);
-        return ResponseEntity.ok(result);
+    @PostMapping
+    public ResponseEntity<Category> saveCategory(@RequestBody Category category) {
+        Category saved = categoryService.saveCategory(category);
+        return ResponseEntity.ok(saved);
     }
 
-    @GetMapping("/user/{userid}")
-    public ResponseEntity<List<Category>> getCategoriesByUser(@PathVariable int userid) {
-        List<Category> categories = categoryService.getCategoriesByUser(userid);
-        return ResponseEntity.ok(categories);
+    @GetMapping("/{id}")
+    public ResponseEntity<Category> getCategory(@PathVariable Long id) {
+        Category category = categoryService.findById(id);
+        return category != null ? ResponseEntity.ok(category) : ResponseEntity.notFound().build();
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<String> updateCategory(@RequestBody Category category) {
-        String result = categoryService.updateCategory(category);
-        return ResponseEntity.ok(result);
+    @GetMapping
+    public ResponseEntity<List<Category>> getAllCategories() {
+        return ResponseEntity.ok(categoryService.findAll());
     }
 
-    @DeleteMapping("/delete/{categoryId}")
-    public ResponseEntity<String> deleteCategory(@PathVariable int categoryId) {
-        String result = categoryService.deleteCategory(categoryId);
-        return ResponseEntity.ok(result);
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Category>> getCategoriesByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(categoryService.findByUserId(userId));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category category) {
+        category.setId(id);
+        Category updated = categoryService.saveCategory(category);
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteCategory(@PathVariable Long id) {
+        categoryService.deleteById(id);
+        return ResponseEntity.ok("Category deleted successfully");
     }
 }

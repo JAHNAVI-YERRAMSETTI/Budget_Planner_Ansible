@@ -13,7 +13,14 @@ import UserLogin from './user/UserLogin';
 import UserRegistration from './user/UserRegistration';
 import Dashboard from './user/Dashboard';
 import Budgets from './user/Budgets';
-import Goals from './user/Goals';
+import Expense from './user/Expense';
+import Income from './user/Income';
+import Category from './user/Category';
+import Transaction from './user/Transaction';
+import Retailer from './user/Retailer';
+import Analysis from './user/Analysis';
+import MonthlyReport from './user/MonthlyReport';
+import Alert from './user/Alert';
 import Reports from './user/Reports';
 import Notifications from './user/Notifications';
 
@@ -66,10 +73,66 @@ function App() {
             } 
           />
           <Route 
-            path="/user/goals" 
+            path="/user/expense" 
             element={
               <ProtectedRoute userType="user">
-                <Goals />
+                <Expense />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/user/income" 
+            element={
+              <ProtectedRoute userType="user">
+                <Income />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/user/category" 
+            element={
+              <ProtectedRoute userType="user">
+                <Category />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/user/transaction" 
+            element={
+              <ProtectedRoute userType="user">
+                <Transaction />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/user/retailer" 
+            element={
+              <ProtectedRoute userType="user">
+                <Retailer />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/user/analysis" 
+            element={
+              <ProtectedRoute userType="user">
+                <Analysis />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/user/monthly-report" 
+            element={
+              <ProtectedRoute userType="user">
+                <MonthlyReport />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/user/alert" 
+            element={
+              <ProtectedRoute userType="user">
+                <Alert />
               </ProtectedRoute>
             } 
           />
