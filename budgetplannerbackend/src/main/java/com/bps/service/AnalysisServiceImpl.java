@@ -105,8 +105,10 @@ public class AnalysisServiceImpl implements AnalysisService {
             boolean hasTremendousGrowth = previousMonthComparison > 50;
 
             List<BudgetGoal> userGoals = budgetGoalRepository.findByUser_Id(userId);
+            Map<String, Double> categoryBudgets = new HashMap<>();
             for (BudgetGoal goal : userGoals) {
                 String categoryName = goal.getCategory() != null ? goal.getCategory().getName() : "Uncategorized";
+                categoryBudgets.put(categoryName, goal.getMonthlyLimit());
                 double categorySpent = categorySpending.getOrDefault(categoryName, 0.0);
                 double percentageUsed = goal.getMonthlyLimit() > 0 ? (categorySpent / goal.getMonthlyLimit()) * 100 : 0;
 
@@ -162,6 +164,7 @@ public class AnalysisServiceImpl implements AnalysisService {
             report.setUser(user);
             report.setReportDate(now);
             report.setCategorySpending(categorySpending);
+            report.setCategoryBudgets(categoryBudgets);
             report.setTotalSpent(totalExpense);
             report.setTotalSaved(totalSaved);
             report.setSpentPercentage(spentPercentage);
@@ -187,6 +190,18 @@ public class AnalysisServiceImpl implements AnalysisService {
             return latestReport.orElse(null);
         } catch (Exception e) {
             throw new RuntimeException("Failed to retrieve latest report: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<AnalysisReport> getAllReports(Long userId) {
+        try {
+            if (userId == null) {
+                throw new IllegalArgumentException("User ID cannot be null");
+            }
+            return analysisReportRepository.findByUser_IdOrderByReportDateDesc(userId);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to retrieve reports: " + e.getMessage(), e);
         }
     }
 }

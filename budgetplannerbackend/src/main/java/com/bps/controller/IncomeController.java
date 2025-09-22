@@ -36,4 +36,19 @@ public class IncomeController {
     public ResponseEntity<List<Income>> getIncomesByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(incomeService.findByUserId(userId));
     }
+
+    // NEW: Update income
+    @PutMapping("/{id}")
+    public ResponseEntity<Income> updateIncome(@PathVariable Long id, @RequestBody Income income) {
+        income.setId(id);  // Ensure ID is set
+        Income updated = incomeService.updateIncome(income);
+        return ResponseEntity.ok(updated);
+    }
+
+    // NEW: Delete income
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteIncome(@PathVariable Long id) {
+        incomeService.deleteIncome(id);
+        return ResponseEntity.noContent().build();
+    }
 }

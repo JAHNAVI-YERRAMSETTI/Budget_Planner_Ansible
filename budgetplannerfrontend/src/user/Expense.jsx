@@ -51,7 +51,7 @@ const Expense = () => {
         const expensesData = await expensesResponse.json()
         if (mounted) setExpenses(expensesData)
 
-        // Load categories
+        // Load categories (user-specific + defaults via backend)
         const categoriesResponse = await fetch(`${config.url}/categories`, {
           headers: {
             'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ const Expense = () => {
       // Reload expenses
       const expensesResponse = await fetch(`${config.url}/expenses/user/${userId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          ...(token && { 'Authorization': `Bearer ${token}` }),
           'Content-Type': 'application/json'
         }
       })
@@ -122,7 +122,8 @@ const Expense = () => {
       setAmount('')
       setDescription('')
       setCategoryId('')
-      setExpenseDate('')
+      const today = new Date().toISOString().split('T')[0];
+      setExpenseDate(today);
     } catch (e) {
       setError(String(e.message || e))
       setSuccessMessage('')
@@ -150,7 +151,7 @@ const Expense = () => {
       // Reload expenses
       const expensesResponse = await fetch(`${config.url}/expenses/user/${userId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          ...(token && { 'Authorization': `Bearer ${token}` }),
           'Content-Type': 'application/json'
         }
       })
@@ -169,7 +170,7 @@ const Expense = () => {
       const userId = user.id || user.userId || user.user_id;
       const token = localStorage.getItem('token') || '';
       
-      const response = await fetch(`${config.url}/expenses/${expenseId}`, {
+      const response = await fetch(`${config.url}/expenses/${expenseId}` , {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -183,7 +184,7 @@ const Expense = () => {
       // Reload expenses
       const expensesResponse = await fetch(`${config.url}/expenses/user/${userId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          ...(token && { 'Authorization': `Bearer ${token}` }),
           'Content-Type': 'application/json'
         }
       })
@@ -279,60 +280,16 @@ const Expense = () => {
             {expenses.map(expense => (
               <tr key={expense.id}>
                 <td>
-                  <input 
-                    type="number" 
-                    step="0.01" 
-                    value={expense.amount} 
-                    onChange={(e) => {
-                      const updatedExpense = { ...expense, amount: Number(e.target.value) }
-                      updateExpense(updatedExpense)
-                    }}
-                    onFocus={(e) => (e.currentTarget.style.outline = '2px solid #2563eb')} 
-                    onBlur={(e) => (e.currentTarget.style.outline = 'none')} 
-                  />
+                  {Number(expense.amount).toFixed(2)}
                 </td>
                 <td>
-                  <input 
-                    type="text" 
-                    value={expense.description || ''} 
-                    onChange={(e) => {
-                      const updatedExpense = { ...expense, description: e.target.value }
-                      updateExpense(updatedExpense)
-                    }}
-                    onFocus={(e) => (e.currentTarget.style.outline = '2px solid #2563eb')} 
-                    onBlur={(e) => (e.currentTarget.style.outline = 'none')} 
-                  />
+                  {expense.description || ''}
                 </td>
                 <td>
-                  <select 
-                    value={expense.category?.id || ''} 
-                    onChange={(e) => {
-                      const selectedCategory = categories.find(cat => cat.id === Number(e.target.value))
-                      const updatedExpense = { ...expense, category: selectedCategory }
-                      updateExpense(updatedExpense)
-                    }}
-                    onFocus={(e) => (e.currentTarget.style.outline = '2px solid #2563eb')} 
-                    onBlur={(e) => (e.currentTarget.style.outline = 'none')} 
-                  >
-                    <option value="">Select Category</option>
-                    {categories.map(category => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
+                  {expense.category?.name || 'Unknown'}
                 </td>
                 <td>
-                  <input 
-                    type="date" 
-                    value={expense.expenseDate || ''} 
-                    onChange={(e) => {
-                      const updatedExpense = { ...expense, expenseDate: e.target.value }
-                      updateExpense(updatedExpense)
-                    }}
-                    onFocus={(e) => (e.currentTarget.style.outline = '2px solid #2563eb')} 
-                    onBlur={(e) => (e.currentTarget.style.outline = 'none')} 
-                  />
+                  {expense.expenseDate || ''}
                 </td>
                 <td>
                   <button 

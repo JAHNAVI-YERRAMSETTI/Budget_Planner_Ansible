@@ -9,4 +9,8 @@ public interface ExpenseService {
     List<Expense> findAll();
     List<Expense> findByUserId(Long userId);
     void checkBudgetGoals(Expense expense);
+    
+    // NEW
+    Expense updateExpense(Expense expense);
+    void deleteExpense(Long id);
 }

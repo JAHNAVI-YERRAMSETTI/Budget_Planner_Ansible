@@ -28,6 +28,12 @@ public class AnalysisReport {
     @Column(name = "amount_spent")
     private Map<String, Double> categorySpending;
     
+    @ElementCollection
+    @CollectionTable(name = "report_category_budgets", joinColumns = @JoinColumn(name = "report_id"))
+    @MapKeyColumn(name = "category_name")
+    @Column(name = "budget_limit")
+    private Map<String, Double> categoryBudgets;
+    
     private double totalSpent;
     private double totalSaved;
     private double spentPercentage;
@@ -45,7 +51,7 @@ public class AnalysisReport {
         this.id = id;
     }
 
-    // Getters and Setters remain the same
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     
@@ -57,6 +63,9 @@ public class AnalysisReport {
     
     public Map<String, Double> getCategorySpending() { return categorySpending; }
     public void setCategorySpending(Map<String, Double> categorySpending) { this.categorySpending = categorySpending; }
+    
+    public Map<String, Double> getCategoryBudgets() { return categoryBudgets; }
+    public void setCategoryBudgets(Map<String, Double> categoryBudgets) { this.categoryBudgets = categoryBudgets; }
     
     public double getTotalSpent() { return totalSpent; }
     public void setTotalSpent(double totalSpent) { this.totalSpent = totalSpent; }

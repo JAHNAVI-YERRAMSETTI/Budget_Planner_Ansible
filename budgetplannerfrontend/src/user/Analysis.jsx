@@ -31,9 +31,12 @@ ChartJS.register(
 const Analysis = () => {
   const navigate = useNavigate()
   const [analysisReports, setAnalysisReports] = useState([])
+  const [budgets, setBudgets] = useState({})
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('All')
+  const [useManual, setUseManual] = useState(false)
   
   // Form states for generating new report
   const [categorySpending, setCategorySpending] = useState({})
@@ -48,15 +51,15 @@ const Analysis = () => {
       try {
         setLoading(true)
         setError('')
-        const response = await fetch(`${config.url}/analysis/${user.id}`, {
+        const reportsResponse = await fetch(`${config.url}/analysis/all/${user.id}`, {
           headers: {
             'Authorization': `Bearer ${user.id}`,
             'Content-Type': 'application/json'
           }
         })
-        if (response.ok) {
-          const data = await response.json()
-          if (mounted) setAnalysisReports(Array.isArray(data) ? data : [data])
+        if (reportsResponse.ok) {
+          const data = await reportsResponse.json()
+          if (mounted) setAnalysisReports(Array.isArray(data) ? data : [])
         }
       } catch (e) {
         if (mounted) setError(String(e.message || e))
@@ -67,6 +70,13 @@ const Analysis = () => {
     load()
     return () => { mounted = false }
   }, [user.id])
+
+  const handleCategorySelect = (e) => {
+    const category = e.target.value
+    setLoading(true)
+    setSelectedCategory(category)
+    setTimeout(() => setLoading(false), 500)
+  }
 
   const addCategorySpending = () => {
     if (newCategory && newAmount) {
@@ -90,6 +100,9 @@ const Analysis = () => {
   const generateAnalysisReport = async (e) => {
     e.preventDefault()
     setError('')
+    if (!useManual) {
+      setCategorySpending({})
+    }
     try {
       const response = await fetch(`${config.url}/analysis?userId=${user.id}`, {
         method: 'POST',
@@ -106,7 +119,7 @@ const Analysis = () => {
       setTimeout(() => setSuccessMessage(''), 3000)
       
       // Reload reports
-      const reportsResponse = await fetch(`${config.url}/analysis/${user.id}`, {
+      const reportsResponse = await fetch(`${config.url}/analysis/all/${user.id}`, {
         headers: {
           'Authorization': `Bearer ${user.id}`,
           'Content-Type': 'application/json'
@@ -114,7 +127,7 @@ const Analysis = () => {
       })
       if (reportsResponse.ok) {
         const reportsData = await reportsResponse.json()
-        setAnalysisReports(Array.isArray(reportsData) ? reportsData : [reportsData])
+        setAnalysisReports(Array.isArray(reportsData) ? reportsData : [])
       }
       
       // Reset form
@@ -142,6 +155,12 @@ const Analysis = () => {
     return `${(value || 0).toFixed(1)}%`
   }
 
+  // Get filtered reports based on selected category
+  const getFilteredReports = () => {
+    if (selectedCategory === 'All' || !analysisReports.length) return analysisReports
+    return analysisReports.filter(report => report.categorySpending && report.categorySpending[selectedCategory] > 0)
+  }
+
   // Generate chart data for category analysis
   const generateCategoryChartData = () => {
     if (!analysisReports.length) return null
@@ -149,8 +168,17 @@ const Analysis = () => {
     const latestReport = analysisReports[0]
     if (!latestReport.categorySpending) return null
     
-    const categories = Object.keys(latestReport.categorySpending)
-    const amounts = Object.values(latestReport.categorySpending)
+    let categories, amounts
+    if (selectedCategory === 'All') {
+      categories = Object.keys(latestReport.categorySpending)
+      amounts = Object.values(latestReport.categorySpending)
+    } else {
+      const spent = latestReport.categorySpending[selectedCategory] || 0
+      const budget = latestReport.categoryBudgets?.[selectedCategory] || 0
+      const remaining = budget - spent
+      categories = [selectedCategory, 'Remaining']
+      amounts = [spent, remaining > 0 ? remaining : 0]
+    }
     
     return {
       labels: categories,
@@ -158,18 +186,9 @@ const Analysis = () => {
         {
           label: 'Spending by Category',
           data: amounts,
-          backgroundColor: [
-            '#FF6384',
-            '#36A2EB',
-            '#FFCE56',
-            '#4BC0C0',
-            '#9966FF',
-            '#FF9F40',
-            '#FF6384',
-            '#C9CBCF',
-            '#4BC0C0',
-            '#FF6384'
-          ],
+          backgroundColor: selectedCategory === 'All' 
+            ? ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384']
+            : ['#FF6384', '#4BC0C0'],
           borderWidth: 1,
         },
       ],
@@ -180,25 +199,35 @@ const Analysis = () => {
   const generateTrendChartData = () => {
     if (!analysisReports.length) return null
     
-    const last6Months = analysisReports.slice(0, 6).reverse()
+    const last6Months = getFilteredReports().slice(0, 6).reverse()
     const months = last6Months.map(report => 
       report.reportDate ? new Date(report.reportDate).toLocaleDateString('en-US', { month: 'short' }) : 'N/A'
     )
-    const spending = last6Months.map(report => report.totalSpent || 0)
-    const savings = last6Months.map(report => report.totalSaved || 0)
+    let spending, savings
+    if (selectedCategory === 'All') {
+      spending = last6Months.map(report => report.totalSpent || 0)
+      savings = last6Months.map(report => report.totalSaved || 0)
+    } else {
+      spending = last6Months.map(report => report.categorySpending?.[selectedCategory] || 0)
+      savings = last6Months.map(report => {
+        const spent = report.categorySpending?.[selectedCategory] || 0
+        const totalIncome = report.totalSaved + report.totalSpent // approximate
+        return totalIncome - spent
+      })
+    }
     
     return {
       labels: months,
       datasets: [
         {
-          label: 'Spending',
+          label: selectedCategory === 'All' ? 'Spending' : `${selectedCategory} Spending`,
           data: spending,
           borderColor: '#FF6384',
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
           tension: 0.1,
         },
         {
-          label: 'Savings',
+          label: selectedCategory === 'All' ? 'Savings' : `${selectedCategory} Remaining`,
           data: savings,
           borderColor: '#36A2EB',
           backgroundColor: 'rgba(54, 162, 235, 0.2)',
@@ -221,6 +250,36 @@ const Analysis = () => {
     },
   }
 
+  const getCategoryStatus = (report, cat) => {
+    const spent = report.categorySpending?.[cat] || 0
+    const budget = report.categoryBudgets?.[cat] || 0
+    const percentage = budget > 0 ? (spent / budget) * 100 : 0
+    if (percentage > 100) return 'Over Budget'
+    if (percentage > 80) return 'Warning'
+    return 'Normal'
+  }
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <div style={{
+          width: '40px',
+          height: '40px',
+          border: '4px solid #f3f3f3',
+          borderTop: '4px solid #3498db',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }} />
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    )
+  }
+
   return (
     <div>
       <UserNavBar onLogout={handleLogout} />
@@ -231,69 +290,133 @@ const Analysis = () => {
           <h3>Generate Analysis Report</h3>
           
           <div style={{ marginBottom: 16 }}>
-            <h4>Category Spending Data</h4>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <input 
-                placeholder="Category Name" 
-                value={newCategory} 
-                onChange={(e) => setNewCategory(e.target.value)} 
+                type="checkbox" 
+                checked={useManual} 
+                onChange={(e) => setUseManual(e.target.checked)} 
               />
-              <input 
-                type="number" 
-                step="0.01" 
-                placeholder="Amount" 
-                value={newAmount} 
-                onChange={(e) => setNewAmount(e.target.value)} 
-              />
-              <button type="button" onClick={addCategorySpending}>Add Category</button>
-            </div>
-            
-            {Object.keys(categorySpending).length > 0 && (
-              <div style={{ marginBottom: 16 }}>
-                <h5>Categories to Analyze:</h5>
-                {Object.entries(categorySpending).map(([category, amount]) => (
-                  <div key={category} style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center',
-                    padding: 8,
-                    backgroundColor: '#f8f9fa',
-                    borderRadius: 4,
-                    margin: '4px 0'
-                  }}>
-                    <span><strong>{category}:</strong> {formatCurrency(amount)}</span>
-                    <button 
-                      type="button"
-                      onClick={() => removeCategorySpending(category)}
-                      style={{ 
-                        backgroundColor: '#dc3545', 
-                        color: 'white', 
-                        border: 'none', 
-                        padding: '2px 6px', 
-                        borderRadius: '3px', 
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
-                    >
-                      Remove
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+              Use Manual Category (optional, uncheck for auto from expenses)
+            </label>
           </div>
           
-          <button type="submit" disabled={Object.keys(categorySpending).length === 0}>
-            Generate Analysis Report
+          {useManual && (
+            <div style={{ marginBottom: 16 }}>
+              <h4>Category Spending Data</h4>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                <input 
+                  placeholder="Category Name" 
+                  value={newCategory} 
+                  onChange={(e) => setNewCategory(e.target.value)} 
+                />
+                <input 
+                  type="number" 
+                  step="0.01" 
+                  placeholder="Amount" 
+                  value={newAmount} 
+                  onChange={(e) => setNewAmount(e.target.value)} 
+                />
+                <button type="button" onClick={addCategorySpending}>Add Category</button>
+              </div>
+              
+              {Object.keys(categorySpending).length > 0 && (
+                <div style={{ marginBottom: 16 }}>
+                  <h5>Categories to Analyze:</h5>
+                  {Object.entries(categorySpending).map(([category, amount]) => (
+                    <div key={category} style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center',
+                      padding: 8,
+                      backgroundColor: '#f8f9fa',
+                      borderRadius: 4,
+                      margin: '4px 0'
+                    }}>
+                      <span><strong>{category}:</strong> {formatCurrency(amount)}</span>
+                      <button 
+                        type="button"
+                        onClick={() => removeCategorySpending(category)}
+                        style={{ 
+                          backgroundColor: '#dc3545', 
+                          color: 'white', 
+                          border: 'none', 
+                          padding: '2px 6px', 
+                          borderRadius: '3px', 
+                          cursor: 'pointer',
+                          fontSize: '12px'
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          
+          {!useManual && (
+            <p style={{ color: '#6c757d' }}>Will automatically fetch and categorize from expenses and transactions.</p>
+          )}
+          
+          <button type="submit" disabled={useManual && Object.keys(categorySpending).length === 0}>
+            Generate Analysis Report {useManual ? '(Manual)' : '(Auto from Expenses)'}
           </button>
         </form>
 
-        {loading && <div>Loading...</div>}
         {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
         {successMessage && <div style={{ color: 'green', marginBottom: '10px' }}>{successMessage}</div>}
 
+        {analysisReports.length > 0 && (
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              View Category: 
+              <select value={selectedCategory} onChange={handleCategorySelect} style={{ padding: 4 }}>
+                <option value="All">All Categories</option>
+                {analysisReports[0]?.categorySpending && Object.keys(analysisReports[0].categorySpending).map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+        )}
+
+        {selectedCategory !== 'All' && analysisReports.length > 0 && (
+          <div className="card" style={{ padding: 16, marginBottom: 16, border: '1px solid #dee2e6' }}>
+            <h4>{selectedCategory} Details (Latest Report)</h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+              <div style={{ textAlign: 'center', padding: 12, backgroundColor: '#ffeaea', borderRadius: 8 }}>
+                <h5 style={{ margin: '0 0 8px 0', color: '#dc3545' }}>Spent</h5>
+                <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#dc3545' }}>
+                  {formatCurrency(analysisReports[0].categorySpending?.[selectedCategory])}
+                </div>
+              </div>
+              <div style={{ textAlign: 'center', padding: 12, backgroundColor: '#e8f5e8', borderRadius: 8 }}>
+                <h5 style={{ margin: '0 0 8px 0', color: '#28a745' }}>Budget</h5>
+                <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#28a745' }}>
+                  {formatCurrency(analysisReports[0].categoryBudgets?.[selectedCategory])}
+                </div>
+              </div>
+              <div style={{ textAlign: 'center', padding: 12, backgroundColor: '#e3f2fd', borderRadius: 8 }}>
+                <h5 style={{ margin: '0 0 8px 0', color: '#1976d2' }}>Remaining</h5>
+                <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#1976d2' }}>
+                  {formatCurrency(
+                    (analysisReports[0].categoryBudgets?.[selectedCategory] || 0) - (analysisReports[0].categorySpending?.[selectedCategory] || 0)
+                  )}
+                </div>
+              </div>
+              <div style={{ textAlign: 'center', padding: 12, backgroundColor: '#fff3e0', borderRadius: 8 }}>
+                <h5 style={{ margin: '0 0 8px 0', color: '#ff9800' }}>Status</h5>
+                <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#ff9800' }}>
+                  {getCategoryStatus(analysisReports[0], selectedCategory)}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div style={{ display: 'grid', gap: 16 }}>
-          {analysisReports.map(report => (
+          {getFilteredReports().map(report => (
             <div key={report.id} className="card" style={{ padding: 16, border: '1px solid #dee2e6' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                 <h3 style={{ margin: 0, color: '#495057' }}>
@@ -305,14 +428,14 @@ const Analysis = () => {
                 <div style={{ textAlign: 'center', padding: 12, backgroundColor: '#ffeaea', borderRadius: 8 }}>
                   <h4 style={{ margin: '0 0 8px 0', color: '#dc3545' }}>Total Spent</h4>
                   <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#dc3545' }}>
-                    {formatCurrency(report.totalSpent)}
+                    {formatCurrency(selectedCategory === 'All' ? report.totalSpent : (report.categorySpending?.[selectedCategory] || 0))}
                   </div>
                 </div>
                 
                 <div style={{ textAlign: 'center', padding: 12, backgroundColor: '#e8f5e8', borderRadius: 8 }}>
                   <h4 style={{ margin: '0 0 8px 0', color: '#28a745' }}>Total Saved</h4>
                   <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#28a745' }}>
-                    {formatCurrency(report.totalSaved)}
+                    {formatCurrency(selectedCategory === 'All' ? report.totalSaved : (report.totalSaved + (report.totalSpent - (report.categorySpending?.[selectedCategory] || 0))))}
                   </div>
                 </div>
                 

@@ -36,4 +36,19 @@ public class ExpenseController {
     public ResponseEntity<List<Expense>> getExpensesByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(expenseService.findByUserId(userId));
     }
+
+    // NEW: Update expense
+    @PutMapping("/{id}")
+    public ResponseEntity<Expense> updateExpense(@PathVariable Long id, @RequestBody Expense expense) {
+        expense.setId(id);  // Ensure ID is set
+        Expense updated = expenseService.updateExpense(expense);
+        return ResponseEntity.ok(updated);
+    }
+
+    // NEW: Delete expense
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteExpense(@PathVariable Long id) {
+        expenseService.deleteExpense(id);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin("*")
@@ -20,6 +21,12 @@ public class AnalysisController {
     public ResponseEntity<AnalysisReport> generateReport(@RequestParam Long userId, @RequestBody Map<String, Double> categorySpending) {
         AnalysisReport report = analysisService.generateAnalysisReport(userId, categorySpending);
         return ResponseEntity.ok(report);
+    }
+
+    @GetMapping("/all/{userId}")
+    public ResponseEntity<List<AnalysisReport>> getAllReports(@PathVariable Long userId) {
+        List<AnalysisReport> reports = analysisService.getAllReports(userId);
+        return ResponseEntity.ok(reports);
     }
 
     @GetMapping("/{userId}")

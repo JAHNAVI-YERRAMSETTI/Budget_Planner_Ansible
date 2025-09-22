@@ -81,4 +81,35 @@ public class ExpenseServiceImpl implements ExpenseService {
             }
         }
     }
+
+    // NEW: Update
+    @Override
+    public Expense updateExpense(Expense expense) {
+        if (expense.getId() == null) {
+            throw new IllegalArgumentException("Expense ID is required for update");
+        }
+        // Fetch existing to preserve associations if not provided (e.g., user/category)
+        Optional<Expense> existingOpt = expenseRepository.findById(expense.getId());
+        if (existingOpt.isPresent()) {
+            Expense existing = existingOpt.get();
+            if (expense.getCategory() == null) expense.setCategory(existing.getCategory());
+            if (expense.getUser() == null) expense.setUser(existing.getUser());
+            if (expense.getExpenseDate() == null) expense.setExpenseDate(existing.getExpenseDate());
+        }
+        Expense updated = expenseRepository.save(expense);
+        checkBudgetGoals(updated);  // Re-check after update
+        return updated;
+    }
+
+    // NEW: Delete
+    @Override
+    public void deleteExpense(Long id) {
+        Optional<Expense> optional = expenseRepository.findById(id);
+        if (optional.isPresent()) {
+            expenseRepository.deleteById(id);
+            // Optional: Adjust budget alerts or logs here
+        } else {
+            throw new IllegalArgumentException("Expense not found with id: " + id);
+        }
+    }
 }

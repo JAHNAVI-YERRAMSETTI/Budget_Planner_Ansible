@@ -1,8 +1,8 @@
 package com.bps.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.util.List;
@@ -17,15 +17,15 @@ public class Category {
     private String name;
 
     @OneToMany(mappedBy = "category")
-    @JsonManagedReference("category-expense")
+    @JsonIgnore
     private List<Expense> expenses;
 
     @OneToMany(mappedBy = "category")
-    @JsonManagedReference("category-transaction")
+    @JsonIgnore
     private List<Transaction> transactions;
 
     @OneToMany(mappedBy = "category")
-    @JsonManagedReference("category-budgetgoal")
+    @JsonIgnore
     private List<BudgetGoal> budgetGoals;
 
     // Default constructor

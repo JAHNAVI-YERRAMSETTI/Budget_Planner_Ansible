@@ -2,6 +2,7 @@ package com.bps.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -17,23 +18,24 @@ public class Expense {
 
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
-    @JsonBackReference(value = "category-expense")  // Matches Category's managed ref
+    // Removed @JsonBackReference to allow serialization
     private Category category;
 
     private String description;
     private double amount;
 
     @Column(name = "expense_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate expenseDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @JsonBackReference(value = "user-expense")  // Matches User's managed ref
+    // Optionally remove @JsonBackReference here too if user details are needed
+    @JsonBackReference(value = "user-expense")  // Keep for now, as table doesn't use user
     private User user;
 
     public Expense() {}
 
-    // JsonCreator for deserialization from ID stub {id: X}
     @JsonCreator
     public Expense(@JsonProperty("id") Long id) {
         this.id = id;

@@ -17,6 +17,17 @@ const Income = () => {
   const [description, setDescription] = useState('')
   const [isRecurring, setIsRecurring] = useState(false)
 
+  // Helper to format date for input (yyyy-MM-dd from backend)
+  const formatDateForInput = (dateStr) => {
+    if (!dateStr) return new Date().toISOString().split('T')[0];
+    // Convert dd-MM-yyyy to yyyy-MM-dd if needed (based on screenshot)
+    const parts = dateStr.split('-');
+    if (parts.length === 3 && parts[0].length === 2 && parts[1].length === 2) {
+      return `${parts[2]}-${parts[1]}-${parts[0]}`; // e.g., "22-09-2025" → "2025-09-22"
+    }
+    return dateStr; // Already yyyy-MM-dd
+  };
+
   // Set default date to today
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -48,6 +59,7 @@ const Income = () => {
         })
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         const data = await response.json()
+        console.log('Loaded incomes:', data) // Debug: Check data structure
         if (mounted) setIncomes(data)
       } catch (e) {
         if (mounted) setError(String(e.message || e))
@@ -83,28 +95,22 @@ const Income = () => {
           amount: Number(amount), 
           source, 
           date: incomeDate,
-          description,
-          isRecurring: isRecurring,
+          description: description || null,
+          isRecurring,
           user: { id: userId }
         })
       })
-      if (!response.ok) throw new Error(`HTTP ${response.status}`)
-      const result = await response.text()
+      if (!response.ok) {
+        const errText = await response.text()
+        throw new Error(`HTTP ${response.status}: ${errText}`)
+      }
+      const result = await response.json()
       console.log('Add income result:', result)
       setSuccessMessage('Income added successfully!')
       setTimeout(() => setSuccessMessage(''), 3000)
       
       // Reload incomes
-      const incomesResponse = await fetch(`${config.url}/incomes/user/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-      if (incomesResponse.ok) {
-        const incomesData = await incomesResponse.json()
-        setIncomes(incomesData)
-      }
+      await loadIncomes(userId, token)
       
       // Reset form
       setAmount('')
@@ -113,43 +119,70 @@ const Income = () => {
       setDescription('')
       setIsRecurring(false)
     } catch (e) {
+      console.error('Add error:', e)
       setError(String(e.message || e))
       setSuccessMessage('')
     }
   }
 
-  const updateIncome = async (income) => {
+  // Helper to reload incomes
+  const loadIncomes = async (userId, token) => {
+    const incomesResponse = await fetch(`${config.url}/incomes/user/${userId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    if (incomesResponse.ok) {
+      const incomesData = await incomesResponse.json()
+      setIncomes(incomesData)
+    }
+  }
+
+  const updateIncome = async (updatedIncome) => {
     try {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       const userId = user.id || user.userId || user.user_id;
       const token = localStorage.getItem('token') || '';
       
-      const response = await fetch(`${config.url}/incomes/${income.id}`, {
+      // Prepare safe body with stubs
+      const body = {
+        id: updatedIncome.id,
+        amount: Number(updatedIncome.amount),
+        source: updatedIncome.source,
+        date: updatedIncome.date,
+        description: updatedIncome.description || null,
+        isRecurring: updatedIncome.isRecurring,
+        user: { id: userId }
+      }
+      console.log('PUT body:', body) // Debug
+
+      const response = await fetch(`${config.url}/incomes/${updatedIncome.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           ...(token && { 'Authorization': `Bearer ${token}` })
         },
-        body: JSON.stringify(income)
+        body: JSON.stringify(body)
       })
-      if (!response.ok) throw new Error(`HTTP ${response.status}`)
-      const result = await response.text()
+      if (!response.ok) {
+        const errText = await response.text()
+        throw new Error(`HTTP ${response.status}: ${errText}`)
+      }
+      const result = await response.json()
       console.log('Update income result:', result)
       
       // Reload incomes
-      const incomesResponse = await fetch(`${config.url}/incomes/user/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-      if (incomesResponse.ok) {
-        const incomesData = await incomesResponse.json()
-        setIncomes(incomesData)
-      }
+      await loadIncomes(userId, token)
     } catch (e) {
+      console.error('Update error details:', e)
       setError(String(e.message || e))
     }
+  }
+
+  const handleRowUpdate = (field, value, income) => {
+    const updated = { ...income, [field]: value }
+    updateIncome(updated)
   }
 
   const deleteIncome = async (incomeId) => {
@@ -165,22 +198,17 @@ const Income = () => {
           ...(token && { 'Authorization': `Bearer ${token}` })
         }
       })
-      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      if (!response.ok) {
+        const errText = await response.text()
+        throw new Error(`HTTP ${response.status}: ${errText}`)
+      }
       const result = await response.text()
       console.log('Delete income result:', result)
       
       // Reload incomes
-      const incomesResponse = await fetch(`${config.url}/incomes/user/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-      if (incomesResponse.ok) {
-        const incomesData = await incomesResponse.json()
-        setIncomes(incomesData)
-      }
+      await loadIncomes(userId, token)
     } catch (e) {
+      console.error('Delete error:', e)
       setError(String(e.message || e))
     }
   }
@@ -194,17 +222,11 @@ const Income = () => {
 
   const totalIncome = incomes.reduce((sum, income) => sum + Number(income.amount || 0), 0)
 
-  // Debug: Show localStorage data
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const userType = localStorage.getItem('userType');
-  const token = localStorage.getItem('token');
-
   return (
     <div>
       <UserNavBar onLogout={handleLogout} />
       <div className="container">
         <h2>Income</h2>
-        
         
         <form onSubmit={addIncome} className="card" style={{ padding: 12, marginBottom: 12 }}>
           <h3>Add Income</h3>
@@ -270,49 +292,41 @@ const Income = () => {
                   <input 
                     type="number" 
                     step="0.01" 
-                    value={income.amount} 
-                    onChange={(e) => {
-                      const updatedIncome = { ...income, amount: Number(e.target.value) }
-                      updateIncome(updatedIncome)
-                    }}
+                    defaultValue={income.amount} 
+                    onBlur={(e) => { handleRowUpdate('amount', Number(e.target.value), income); e.currentTarget.style.outline = 'none' }}
+                    onKeyDown={(e) => e.key === 'Enter' && handleRowUpdate('amount', Number(e.target.value), income)}
                     onFocus={(e) => (e.currentTarget.style.outline = '2px solid #2563eb')} 
-                    onBlur={(e) => (e.currentTarget.style.outline = 'none')} 
+                    
                   />
                 </td>
                 <td>
                   <input 
                     type="text" 
-                    value={income.source} 
-                    onChange={(e) => {
-                      const updatedIncome = { ...income, source: e.target.value }
-                      updateIncome(updatedIncome)
-                    }}
+                    defaultValue={income.source} 
+                    onBlur={(e) => { handleRowUpdate('source', e.target.value, income); e.currentTarget.style.outline = 'none' }}
+                    onKeyDown={(e) => e.key === 'Enter' && handleRowUpdate('source', e.target.value, income)}
                     onFocus={(e) => (e.currentTarget.style.outline = '2px solid #2563eb')} 
-                    onBlur={(e) => (e.currentTarget.style.outline = 'none')} 
+                    
                   />
                 </td>
                 <td>
                   <input 
                     type="date" 
-                    value={income.date || ''} 
-                    onChange={(e) => {
-                      const updatedIncome = { ...income, date: e.target.value }
-                      updateIncome(updatedIncome)
-                    }}
+                    defaultValue={formatDateForInput(income.date)} 
+                    onBlur={(e) => { handleRowUpdate('date', e.target.value, income); e.currentTarget.style.outline = 'none' }}
+                    onKeyDown={(e) => e.key === 'Enter' && handleRowUpdate('date', e.target.value, income)}
                     onFocus={(e) => (e.currentTarget.style.outline = '2px solid #2563eb')} 
-                    onBlur={(e) => (e.currentTarget.style.outline = 'none')} 
+                    
                   />
                 </td>
                 <td>
                   <input 
                     type="text" 
-                    value={income.description || ''} 
-                    onChange={(e) => {
-                      const updatedIncome = { ...income, description: e.target.value }
-                      updateIncome(updatedIncome)
-                    }}
+                    defaultValue={income.description || ''} 
+                    onBlur={(e) => { handleRowUpdate('description', e.target.value, income); e.currentTarget.style.outline = 'none' }}
+                    onKeyDown={(e) => e.key === 'Enter' && handleRowUpdate('description', e.target.value, income)}
                     onFocus={(e) => (e.currentTarget.style.outline = '2px solid #2563eb')} 
-                    onBlur={(e) => (e.currentTarget.style.outline = 'none')} 
+                    
                   />
                 </td>
                 <td>

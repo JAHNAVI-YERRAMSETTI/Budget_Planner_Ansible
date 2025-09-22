@@ -21,31 +21,19 @@ const Dashboard = () => {
       try {
         setLoading(true)
         setError('')
+        const userId = user.id || user.userId || user.user_id
+        const token = localStorage.getItem('token') || ''
+
+        const authHeaders = {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+
         const [incomes, expenses, reports, budgetsData] = await Promise.all([
-          fetch(`${config.url}/incomes`, {
-            headers: {
-              'Authorization': `Bearer ${user.id}`,
-              'Content-Type': 'application/json'
-            }
-          }).then(res => res.ok ? res.json() : []),
-          fetch(`${config.url}/expenses`, {
-            headers: {
-              'Authorization': `Bearer ${user.id}`,
-              'Content-Type': 'application/json'
-            }
-          }).then(res => res.ok ? res.json() : []),
-          fetch(`${config.url}/reports`, {
-            headers: {
-              'Authorization': `Bearer ${user.id}`,
-              'Content-Type': 'application/json'
-            }
-          }).then(res => res.ok ? res.json() : []),
-          fetch(`${config.url}/budgetgoal/user/${user.id}`, {
-            headers: {
-              'Authorization': `Bearer ${user.id}`,
-              'Content-Type': 'application/json'
-            }
-          }).then(res => res.ok ? res.json() : [])
+          fetch(`${config.url}/incomes/user/${userId}`, { headers: authHeaders }).then(res => res.ok ? res.json() : []),
+          fetch(`${config.url}/expenses/user/${userId}`, { headers: authHeaders }).then(res => res.ok ? res.json() : []),
+          fetch(`${config.url}/reports`, { headers: { ...authHeaders, ...(userId && !token ? { 'Authorization': `Bearer ${userId}` } : {}) } }).then(res => res.ok ? res.json() : []),
+          fetch(`${config.url}/budgetgoals/user/${userId}`, { headers: authHeaders }).then(res => res.ok ? res.json() : [])
         ])
         
         // Calculate summary for the selected month
@@ -54,7 +42,7 @@ const Dashboard = () => {
         const monthEnd = new Date(year, monthNum, 0)
         
         const monthIncomes = incomes.filter(income => {
-          const incomeDate = new Date(income.date)
+          const incomeDate = new Date(income.incomeDate || income.date)
           return incomeDate >= monthStart && incomeDate <= monthEnd
         })
         
@@ -163,7 +151,7 @@ const Dashboard = () => {
         {/* Budget Alerts */}
         {budgetAlerts.length > 0 && (
           <div style={{ marginTop: 24 }}>
-            <h3 style={{ color: '#dc3545' }}>⚠️ Budget Alerts</h3>
+            <h3 style={{ color: '#dc3545' }}>⚠ Budget Alerts</h3>
             <div style={{ display: 'grid', gap: 12 }}>
               {budgetAlerts.map((alert, index) => (
                 <div key={index} style={{ 

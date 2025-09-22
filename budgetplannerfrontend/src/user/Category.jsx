@@ -78,21 +78,20 @@ const Category = () => {
       setTimeout(() => setSuccessMessage(''), 3000)
       
       // Reload categories
-      const categoriesResponse = await fetch(`${config.url}/categories`, {
+      const addCategoriesResponse = await fetch(`${config.url}/categories`, {
         headers: {
           'Content-Type': 'application/json',
           ...(token && { 'Authorization': `Bearer ${token}` })
         }
       })
-      if (categoriesResponse.ok) {
-        const categoriesData = await categoriesResponse.json()
+      if (addCategoriesResponse.ok) {
+        const categoriesData = await addCategoriesResponse.json()
         setCategories(categoriesData)
       }
       
       // Reset form
       setName('')
-      setDescription('')
-      setBudgetLimit('')
+      
     } catch (e) {
       setError(String(e.message || e))
       setSuccessMessage('')
@@ -117,14 +116,14 @@ const Category = () => {
       console.log('Update category result:', result)
       
       // Reload categories
-      const categoriesResponse = await fetch(`${config.url}/categories`, {
+      const updateCategoriesResponse = await fetch(`${config.url}/categories`, {
         headers: {
           'Content-Type': 'application/json',
           ...(token && { 'Authorization': `Bearer ${token}` })
         }
       })
-      if (categoriesResponse.ok) {
-        const categoriesData = await categoriesResponse.json()
+      if (updateCategoriesResponse.ok) {
+        const categoriesData = await updateCategoriesResponse.json()
         setCategories(categoriesData)
       }
     } catch (e) {
@@ -149,14 +148,14 @@ const Category = () => {
       console.log('Delete category result:', result)
       
       // Reload categories
-      const categoriesResponse = await fetch(`${config.url}/categories`, {
+      const deleteCategoriesResponse = await fetch(`${config.url}/categories`, {
         headers: {
           'Content-Type': 'application/json',
           ...(token && { 'Authorization': `Bearer ${token}` })
         }
       })
-      if (categoriesResponse.ok) {
-        const categoriesData = await categoriesResponse.json()
+      if (deleteCategoriesResponse.ok) {
+        const categoriesData = await deleteCategoriesResponse.json()
         setCategories(categoriesData)
       }
     } catch (e) {

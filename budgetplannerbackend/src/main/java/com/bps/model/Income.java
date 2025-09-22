@@ -2,6 +2,7 @@ package com.bps.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -20,9 +21,11 @@ public class Income {
     private User user;
 
     private double amount;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
     private String source;
     private String description;
+    private boolean isRecurring;
 
     public Income() {}
 
@@ -49,4 +52,7 @@ public class Income {
     
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public boolean getIsRecurring() { return isRecurring; }
+    public void setIsRecurring(boolean isRecurring) { this.isRecurring = isRecurring; }
 }
