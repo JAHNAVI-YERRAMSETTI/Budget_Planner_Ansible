@@ -40,7 +40,7 @@ services:
     ports:
       - "2098:2098"
     depends_on:
-      backend
+      - backend
     networks:
       - budgetplanner-network
 
