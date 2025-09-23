@@ -6,7 +6,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: bpsdb
     ports:
-      - "3306:3306"
+      - "3307:3306"  # Changed host port to 3307
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
