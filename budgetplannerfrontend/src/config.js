@@ -1,5 +1,5 @@
+// config.js
 const config = {
-    "url": "/api"
- }
-
- export default config;
+  url: import.meta.env.VITE_API_URL
+};
+export default config;
