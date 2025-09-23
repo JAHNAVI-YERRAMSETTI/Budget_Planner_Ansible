@@ -34,6 +34,7 @@ public class AdminController {
         return adminService.findAll();
     }
 
+    // Login endpoint with input trimming and logging
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Admin admin) {
         String username = admin.getUsername() != null ? admin.getUsername().trim() : null;
@@ -45,7 +46,7 @@ public class AdminController {
         System.out.println("Existing admin from DB: " + existingAdmin);
 
         if (existingAdmin != null && password != null && password.equals(existingAdmin.getPassword())) {
-            existingAdmin.setPassword(null);
+            existingAdmin.setPassword(null); // Don't return password
             return ResponseEntity.ok(existingAdmin);
         } else {
             return ResponseEntity.status(401).body("Invalid username or password");
