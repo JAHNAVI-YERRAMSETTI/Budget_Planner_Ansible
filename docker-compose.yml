@@ -38,7 +38,7 @@ services:
       context: ./budgetplannerfrontend
       dockerfile: ../BUDGET_PLANNER_FULLSTACK/frontend.Dockerfile
     ports:
-      - "2098:2098"
+      - "2098:80"
     depends_on:
       - backend
     networks:
