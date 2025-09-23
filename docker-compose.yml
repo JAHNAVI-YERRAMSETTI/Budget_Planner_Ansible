@@ -6,7 +6,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: bpsdb
     ports:
-      - "3307:3306"  # Changed host port to 3307
+      - "3307:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
@@ -35,7 +35,7 @@ services:
   frontend:
     container_name: budgetplanner-frontend
     build:
-      context: ./budgetplannerfrontend
+      context: ./budgetplannerfrontend  
       dockerfile: ../BUDGET_PLANNER_FULLSTACK/frontend.Dockerfile
     ports:
       - "2098:80"
