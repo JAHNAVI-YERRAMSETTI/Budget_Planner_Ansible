@@ -24,12 +24,17 @@ const AdminLogin = () => {
     setLoading(true)
 
     try {
+      const trimmedFormData = {
+        username: formData.username.trim(),
+        password: formData.password.trim()
+      }
+
       const response = await fetch(`${config.url}/admins/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(trimmedFormData),
       })
 
       if (response.ok) {
