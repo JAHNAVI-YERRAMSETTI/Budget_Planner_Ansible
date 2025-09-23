@@ -1,4 +1,4 @@
-import NotFoundImage from './notfound.png';
+import NotFoundImage from './NotFound.png';
 import './style.css'
 
 export default function PageNotFound() {
