@@ -53,53 +53,57 @@ const ViewUsers = () => {
     },
     title: {
       fontSize: '24px',
-      color: '#333',
+      color: '#7c3aed', // violet, brand color
       marginBottom: '20px'
     },
     table: {
       width: '100%',
       borderCollapse: 'collapse',
-      background: 'white',
-      borderRadius: '8px',
+      background: '#fff',
+      borderRadius: '12px',
       overflow: 'hidden',
-      boxShadow: '0 5px 15px rgba(0, 0, 0, 0.1)'
+      boxShadow: '0 8px 24px rgba(124,58,237,0.12)' // subtle shadow with violet tint
     },
     th: {
-      background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
-      color: 'white',
+      background: '#d1c4e9', // light violet from userdashboard
+      color: '#7c3aed', // brand violet
       padding: '15px',
       textAlign: 'left',
-      fontWeight: '600'
+      fontWeight: 'bold',
+      fontSize: '16px',
+      borderBottom: '2px solid #7c3aed' // brand violet
     },
     td: {
-      padding: '15px',
+      padding: '14px',
       borderBottom: '1px solid #eee'
     },
     tr: {
       transition: 'background-color 0.3s ease'
     },
     deleteBtn: {
-      background: '#ff4757',
+      background: '#6096fd', // accent blue from home actions
       color: 'white',
       border: 'none',
-      padding: '8px 12px',
-      borderRadius: '4px',
+      padding: '8px 14px',
+      borderRadius: '6px',
       cursor: 'pointer',
+      fontWeight: 'bold',
       fontSize: '14px',
-      transition: 'background-color 0.3s ease'
+      boxShadow: '0 2px 6px rgba(96,150,253,0.14)',
+      transition: 'filter 0.3s ease'
     },
     loading: {
       textAlign: 'center',
       padding: '40px',
       fontSize: '18px',
-      color: '#666'
+      color: '#7c3aed' // violet for loading state
     },
     error: {
       textAlign: 'center',
       padding: '40px',
       fontSize: '18px',
-      color: '#ff4757',
-      background: '#ffe6e6',
+      color: '#7c3aed', // violet, stays brand
+      background: '#f3f0ff',
       borderRadius: '8px',
       margin: '20px 0'
     },
@@ -107,9 +111,10 @@ const ViewUsers = () => {
       textAlign: 'center',
       padding: '40px',
       fontSize: '18px',
-      color: '#666'
+      color: '#7c3aed' // violet accent
     }
-  };
+  }
+;
 
   if (loading) {
     return <div style={styles.loading}>Loading users...</div>;

@@ -210,10 +210,10 @@ const Transaction = () => {
   return (
     <div>
       <UserNavBar onLogout={handleLogout} />
-      <div className="container">
+      <div className="container" style={{ background: '#ffffff', padding: 16 }}>
         <h2>Transactions</h2>
         
-        <form onSubmit={addTransaction} className="card" style={{ padding: 12, marginBottom: 12 }}>
+        <form onSubmit={addTransaction} className="card" style={{ padding: 16, marginBottom: 16, background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:12, boxShadow:'0 8px 24px rgba(15,23,42,0.06)' }}>
           <h3>Add Transaction</h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: 8 }}>
             <input 
@@ -253,7 +253,12 @@ const Transaction = () => {
             </select>
           </div>
           <div style={{ display: 'flex', gap: 16, marginTop: 8, alignItems: 'center' }}>
-            <button type="submit">Add Transaction</button>
+            <button type="submit" style={{
+              padding: '10px 16px',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700,
+              cursor: 'pointer', boxShadow: '0 10px 24px rgba(102,126,234,0.25)'
+            }}>Add Transaction</button>
             <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <input 
                 type="checkbox" 
@@ -289,23 +294,18 @@ const Transaction = () => {
           </div>
         </div>
 
-        <table className="table">
+        <table className="table" style={{ width:'100%', borderCollapse:'separate', borderSpacing:0, background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:12, boxShadow:'0 8px 24px rgba(15,23,42,0.06)' }}>
           <thead>
             <tr>
-              <th>Amount</th>
-              <th>Date</th>
-              <th>Retailer</th>
-              <th>Category</th>
-              <th>Suggested Category</th>
-              <th>Type</th>
-              <th>Confirmed</th>
-              <th>Actions</th>
+              {['Amount','Date','Retailer','Category','Suggested Category','Type','Confirmed','Actions'].map(h => (
+                <th key={h} style={{ textAlign:'left', padding:'12px 14px', background:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color:'#fff' }}>{h}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {transactions.map(transaction => (
               <tr key={transaction.id}>
-                <td>
+                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                   <input 
                     type="number" 
                     step="0.01" 
@@ -318,7 +318,7 @@ const Transaction = () => {
                     onBlur={(e) => (e.currentTarget.style.outline = 'none')} 
                   />
                 </td>
-                <td>
+                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                   <input 
                     type="date" 
                     value={transaction.date ? new Date(transaction.date).toISOString().split('T')[0] : ''} 
@@ -330,7 +330,7 @@ const Transaction = () => {
                     onBlur={(e) => (e.currentTarget.style.outline = 'none')} 
                   />
                 </td>
-                <td>
+                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                   <input 
                     type="text" 
                     value={transaction.retailer || ''} 
@@ -342,7 +342,7 @@ const Transaction = () => {
                     onBlur={(e) => (e.currentTarget.style.outline = 'none')} 
                   />
                 </td>
-                <td>
+                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                   <select 
                     value={transaction.category?.id || ''} 
                     onChange={(e) => {
@@ -363,7 +363,7 @@ const Transaction = () => {
                     ))}
                   </select>
                 </td>
-                <td>
+                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                   <span style={{ 
                     color: transaction.suggestedCategory ? '#1976d2' : '#6c757d',
                     fontStyle: 'italic'
@@ -371,7 +371,7 @@ const Transaction = () => {
                     {transaction.suggestedCategory || 'None'}
                   </span>
                 </td>
-                <td>
+                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                   <span style={{ 
                     color: transaction.isPaymentAppImport ? '#ff9800' : '#4caf50',
                     fontWeight: 'bold'
@@ -379,7 +379,7 @@ const Transaction = () => {
                     {transaction.isPaymentAppImport ? 'Import' : 'Manual'}
                   </span>
                 </td>
-                <td>
+                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                   <span style={{ 
                     color: transaction.isUserConfirmedCategory ? '#4caf50' : '#f44336',
                     fontWeight: 'bold'
@@ -387,10 +387,10 @@ const Transaction = () => {
                     {transaction.isUserConfirmedCategory ? 'Yes' : 'No'}
                   </span>
                 </td>
-                <td>
+                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                   <button 
                     onClick={() => deleteTransaction(transaction.id)}
-                    style={{ backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}
+                    style={{ background: 'linear-gradient(135deg, #ff6b6b, #ee5a24)', color: 'white', border: 'none', padding: '6px 10px', borderRadius: 10, cursor: 'pointer' }}
                   >
                     Delete
                   </button>

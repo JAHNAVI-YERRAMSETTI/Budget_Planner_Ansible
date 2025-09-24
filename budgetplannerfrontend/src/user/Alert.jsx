@@ -177,10 +177,10 @@ const Alert = () => {
   return (
     <div>
       <UserNavBar onLogout={handleLogout} />
-      <div className="container">
+      <div className="container" style={{ background: '#ffffff', padding: 16 }}>
         <h2>Alerts & Notifications</h2>
         
-        <form onSubmit={addAlert} className="card" style={{ padding: 12, marginBottom: 12 }}>
+        <form onSubmit={addAlert} className="card" style={{ padding: 16, marginBottom: 16, background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:12, boxShadow:'0 8px 24px rgba(15,23,42,0.06)' }}>
           <h3>Add Alert</h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8 }}>
             <input 
@@ -206,7 +206,12 @@ const Alert = () => {
               />
               Mark as Resolved
             </label>
-            <button type="submit">Add Alert</button>
+            <button type="submit" style={{
+              padding: '10px 16px',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700,
+              cursor: 'pointer', boxShadow: '0 10px 24px rgba(102,126,234,0.25)'
+            }}>Add Alert</button>
           </div>
         </form>
 
@@ -218,14 +223,12 @@ const Alert = () => {
           <strong>Unresolved Alerts: {unreadCount}</strong>
         </div>
 
-        <table className="table">
+        <table className="table" style={{ width:'100%', borderCollapse:'separate', borderSpacing:0, background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:12, boxShadow:'0 8px 24px rgba(15,23,42,0.06)' }}>
           <thead>
             <tr>
-              <th>Message</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Created</th>
-              <th>Actions</th>
+              {['Message','Type','Status','Created','Actions'].map(h => (
+                <th key={h} style={{ textAlign:'left', padding:'12px 14px', background:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color:'#fff' }}>{h}</th>
+              ))}
             </tr>
           </thead>
           <tbody>

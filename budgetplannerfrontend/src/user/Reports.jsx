@@ -158,7 +158,7 @@ const Reports = () => {
   return (
     <div>
       <UserNavBar onLogout={handleLogout} />
-      <div className="container">
+      <div className="container" style={{ background: '#ffffff', padding: 16 }}>
         <h2>Financial Reports</h2>
         
         {loading && <div>Loading...</div>}
@@ -216,15 +216,12 @@ const Reports = () => {
             <p>Generate monthly reports to see your financial trends and analysis.</p>
           </div>
         ) : (
-          <table className="table">
+          <table className="table" style={{ width:'100%', borderCollapse:'separate', borderSpacing:0, background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:12, boxShadow:'0 8px 24px rgba(15,23,42,0.06)' }}>
             <thead>
               <tr>
-                <th>Month/Year</th>
-                <th>Total Income</th>
-                <th>Total Expenses</th>
-                <th>Net Income</th>
-                <th>Savings Rate</th>
-                <th>Generated</th>
+                {['Month/Year','Total Income','Total Expenses','Net Income','Savings Rate','Generated'].map(h => (
+                  <th key={h} style={{ textAlign:'left', padding:'12px 14px', background:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color:'#fff' }}>{h}</th>
+                ))}
               </tr>
             </thead>
             <tbody>

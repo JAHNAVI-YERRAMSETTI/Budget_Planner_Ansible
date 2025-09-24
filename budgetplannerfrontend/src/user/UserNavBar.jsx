@@ -5,13 +5,66 @@ const UserNavBar = ({ onLogout }) => {
   const navigate = useNavigate()
 
   const styles = {
-    nav: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', background: 'black', color: 'white' },
-    brand: { fontWeight: 700 },
-    links: { display: 'flex', gap: 12, listStyle: 'none', margin: 0, padding: 0 },
-    link: ({ isActive }) => ({ color: 'white', padding: '6px 8px', borderRadius: 6, background: isActive ? 'rgba(255,255,255,0.1)' : 'transparent' }),
-    right: { display: 'flex', alignItems: 'center', gap: 8 }
+    nav: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      height: '100vh',
+      width: '230px',
+      display: 'flex',
+      flexDirection: 'column',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      color: 'white',
+      boxShadow: '0 8px 22px rgba(0,0,0,0.15)',
+      zIndex: 1000,
+      padding: '22px 14px 14px 16px',
+      justifyContent: 'flex-start'
+    },
+    brand: {
+      fontWeight: 900,
+      letterSpacing: 0.3,
+      fontSize: '24px',
+      marginBottom: '24px',
+      marginLeft: '4px'
+    },
+    links: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 6,
+      listStyle: 'none',
+      margin: 0,
+      padding: 0,
+      flex: 1
+    },
+    link: ({ isActive }) => ({
+      color: '#fff',
+      padding: '10px 16px',
+      borderRadius: 10,
+      marginBottom: '2px',
+      background: isActive ? 'rgba(255,255,255,0.16)' : 'transparent',
+      border: isActive ? '1px solid rgba(255,255,255,0.3)' : '1px solid transparent',
+      display: 'block',
+      fontWeight: isActive ? 'bold' : 'normal',
+      transition: 'background 0.2s'
+    }),
+    logoutWrapper: {
+      paddingTop: '8px',
+      display: 'flex',
+      justifyContent: 'center'
+    },
+    logoutBtn: {
+      color: '#fff',
+      background: 'rgba(255,255,255,0.16)',
+      border: '1px solid rgba(255,255,255,0.35)',
+      borderRadius: 10,
+      padding: '8px 22px',
+      cursor: 'pointer',
+      fontSize: '16px',
+      fontWeight: 'bold',
+      transition: 'filter 0.2s ease'
+    }
   }
-  
+
   return (
     <nav style={styles.nav}>
       <div style={styles.brand}>My Budget</div>
@@ -28,10 +81,19 @@ const UserNavBar = ({ onLogout }) => {
         <li><NavLink to="/user/alert" style={styles.link}>Alerts</NavLink></li>
         <li><NavLink to="/user/reports" style={styles.link}>Reports</NavLink></li>
         <li><NavLink to="/user/notifications" style={styles.link}>Notifications</NavLink></li>
+        <li>
+          <div style={styles.logoutWrapper}>
+            <button 
+              style={styles.logoutBtn}
+              onClick={() => { onLogout(); navigate('/') }}
+              onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.07)')}
+              onMouseLeave={e => (e.currentTarget.style.filter = 'none')}
+            >
+              Logout
+            </button>
+          </div>
+        </li>
       </ul>
-      <div style={styles.right}>
-        <button onClick={() => { onLogout(); navigate('/') }} style={{ color: '#fff', background: 'transparent', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 6, padding: '6px 10px', cursor: 'pointer', transition: 'filter 0.2s ease' }} onMouseEnter={(e) => (e.currentTarget.style.filter = 'brightness(1.1)')} onMouseLeave={(e) => (e.currentTarget.style.filter = 'none')}>Logout</button>
-      </div>
     </nav>
   )
 }

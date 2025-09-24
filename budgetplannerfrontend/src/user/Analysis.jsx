@@ -283,10 +283,10 @@ const Analysis = () => {
   return (
     <div>
       <UserNavBar onLogout={handleLogout} />
-      <div className="container">
+      <div className="container" style={{ background: '#ffffff', padding: 16 }}>
         <h2>Financial Analysis</h2>
         
-        <form onSubmit={generateAnalysisReport} className="card" style={{ padding: 12, marginBottom: 12 }}>
+        <form onSubmit={generateAnalysisReport} className="card" style={{ padding: 16, marginBottom: 16, background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:12, boxShadow:'0 8px 24px rgba(15,23,42,0.06)' }}>
           <h3>Generate Analysis Report</h3>
           
           <div style={{ marginBottom: 16 }}>
@@ -316,7 +316,12 @@ const Analysis = () => {
                   value={newAmount} 
                   onChange={(e) => setNewAmount(e.target.value)} 
                 />
-                <button type="button" onClick={addCategorySpending}>Add Category</button>
+                <button type="button" onClick={addCategorySpending} style={{
+                  padding: '10px 16px',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700,
+                  cursor: 'pointer', boxShadow: '0 10px 24px rgba(102,126,234,0.25)'
+                }}>Add Category</button>
               </div>
               
               {Object.keys(categorySpending).length > 0 && (
@@ -359,7 +364,12 @@ const Analysis = () => {
             <p style={{ color: '#6c757d' }}>Will automatically fetch and categorize from expenses and transactions.</p>
           )}
           
-          <button type="submit" disabled={useManual && Object.keys(categorySpending).length === 0}>
+          <button type="submit" disabled={useManual && Object.keys(categorySpending).length === 0} style={{
+            padding: '10px 16px',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700,
+            cursor: 'pointer', boxShadow: '0 10px 24px rgba(102,126,234,0.25)'
+          }}>
             Generate Analysis Report {useManual ? '(Manual)' : '(Auto from Expenses)'}
           </button>
         </form>

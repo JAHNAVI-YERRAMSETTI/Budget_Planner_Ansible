@@ -219,11 +219,11 @@ const Expense = () => {
   return (
     <div>
       <UserNavBar onLogout={handleLogout} />
-      <div className="container">
+      <div className="container" style={{ background: '#ffffff', padding: 16 }}>
         <h2>Expenses</h2>
         
         
-        <form onSubmit={addExpense} className="card" style={{ padding: 12, marginBottom: 12 }}>
+        <form onSubmit={addExpense} className="card" style={{ padding: 16, marginBottom: 16, background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:12, boxShadow:'0 8px 24px rgba(15,23,42,0.06)' }}>
           <h3>Add Expense</h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: 8 }}>
             <input 
@@ -258,7 +258,12 @@ const Expense = () => {
               value={expenseDate} 
               onChange={(e) => setExpenseDate(e.target.value)} 
             />
-            <button type="submit">Add Expense</button>
+            <button type="submit" style={{
+              padding: '10px 16px',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700,
+              cursor: 'pointer', boxShadow: '0 10px 24px rgba(102,126,234,0.25)'
+            }}>Add Expense</button>
           </div>
         </form>
 
@@ -266,35 +271,33 @@ const Expense = () => {
         {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
         {successMessage && <div style={{ color: 'green', marginBottom: '10px' }}>{successMessage}</div>}
 
-        <table className="table">
+        <table className="table" style={{ width:'100%', borderCollapse:'separate', borderSpacing:0, background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:12, boxShadow:'0 8px 24px rgba(15,23,42,0.06)' }}>
           <thead>
             <tr>
-              <th>Amount</th>
-              <th>Description</th>
-              <th>Category</th>
-              <th>Date</th>
-              <th>Actions</th>
+              {['Amount','Description','Category','Date','Actions'].map(h => (
+                <th key={h} style={{ textAlign:'left', padding:'12px 14px', background:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color:'#fff' }}>{h}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {expenses.map(expense => (
               <tr key={expense.id}>
-                <td>
+                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                   {Number(expense.amount).toFixed(2)}
                 </td>
-                <td>
+                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                   {expense.description || ''}
                 </td>
-                <td>
+                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                   {expense.category?.name || 'Unknown'}
                 </td>
-                <td>
+                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                   {expense.expenseDate || ''}
                 </td>
-                <td>
+                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                   <button 
                     onClick={() => deleteExpense(expense.id)}
-                    style={{ backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}
+                    style={{ background: 'linear-gradient(135deg, #ff6b6b, #ee5a24)', color: 'white', border: 'none', padding: '6px 10px', borderRadius: 10, cursor: 'pointer' }}
                   >
                     Delete
                   </button>

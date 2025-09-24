@@ -124,8 +124,13 @@ const Dashboard = () => {
   return (
     <div>
       <UserNavBar onLogout={handleLogout} />
-      <div className="container">
-        <h2>Dashboard</h2>
+      <div className="container" style={{ padding: 16, background: '#ffffff' }}>
+        <div>
+        <h2 style={{ color: '#667eea', fontWeight: 'bold' /* matches purple from quick action buttons */, fontSize: '2rem' }}>
+  Dashboard
+</h2>
+
+        </div>
         <div style={{ marginBottom: 12 }}>
           <label>Month: </label>
           <input type="month" value={month} onChange={(e) => setMonth(e.target.value)} />
@@ -133,14 +138,23 @@ const Dashboard = () => {
         {loading && <div>Loading...</div>}
         {error && <div style={{ color: 'black' }}>{error}</div>}
         {summary && (
-          <div className="cards-grid">
+          <div className="cards-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
             {[
               { label: 'Income', value: summary.income?.toFixed?.(2) ?? summary.income },
               { label: 'Expenses', value: summary.expenses?.toFixed?.(2) ?? summary.expenses },
               { label: 'Saved', value: (summary.income - summary.expenses)?.toFixed?.(2) },
               { label: 'Saved %', value: `${savingsPercent}%` }
             ].map((c) => (
-              <button key={c.label} className="card" style={{ cursor: 'pointer', transition: 'filter 0.2s ease' }} onMouseEnter={(e) => (e.currentTarget.style.filter = 'brightness(1.08)')} onMouseLeave={(e) => (e.currentTarget.style.filter = 'none')}>
+              <button key={c.label} className="card" style={{
+                cursor: 'pointer',
+                transition: 'filter 0.2s ease',
+                background: 'rgba(255,255,255,0.14)',
+                border: '1px solid rgba(255,255,255,0.25)',
+                color: 'white',
+                borderRadius: 14,
+                padding: 12,
+                boxShadow: '0 10px 24px rgba(0,0,0,0.2)'
+              }} onMouseEnter={(e) => (e.currentTarget.style.filter = 'brightness(1.08)')} onMouseLeave={(e) => (e.currentTarget.style.filter = 'none')}>
                 <div className="card-title">{c.label}</div>
                 <div className="card-value">{c.value}</div>
               </button>
@@ -192,7 +206,7 @@ const Dashboard = () => {
               onClick={() => navigate('/user/expense')}
               style={{ 
                 padding: 16, 
-                backgroundColor: '#dc3545', 
+                background: 'linear-gradient(135deg, #10B981, #059669)',
                 color: 'white', 
                 border: 'none', 
                 borderRadius: 8, 
@@ -207,7 +221,7 @@ const Dashboard = () => {
               onClick={() => navigate('/user/income')}
               style={{ 
                 padding: 16, 
-                backgroundColor: '#28a745', 
+                background: 'linear-gradient(135deg, #3B82F6, #60A5FA)',
                 color: 'white', 
                 border: 'none', 
                 borderRadius: 8, 
@@ -222,7 +236,7 @@ const Dashboard = () => {
               onClick={() => navigate('/user/budgets')}
               style={{ 
                 padding: 16, 
-                backgroundColor: '#17a2b8', 
+                background: 'linear-gradient(135deg, #667eea, #764ba2)',
                 color: 'white', 
                 border: 'none', 
                 borderRadius: 8, 
@@ -237,7 +251,7 @@ const Dashboard = () => {
               onClick={() => navigate('/user/analysis')}
               style={{ 
                 padding: 16, 
-                backgroundColor: '#6f42c1', 
+                background: 'linear-gradient(135deg, #4ecdc4, #45b7d1)',
                 color: 'white', 
                 border: 'none', 
                 borderRadius: 8, 

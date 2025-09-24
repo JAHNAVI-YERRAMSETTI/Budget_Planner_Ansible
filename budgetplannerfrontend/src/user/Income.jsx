@@ -225,10 +225,10 @@ const Income = () => {
   return (
     <div>
       <UserNavBar onLogout={handleLogout} />
-      <div className="container">
+      <div className="container" style={{ background: '#ffffff', padding: 16 }}>
         <h2>Income</h2>
         
-        <form onSubmit={addIncome} className="card" style={{ padding: 12, marginBottom: 12 }}>
+        <form onSubmit={addIncome} className="card" style={{ padding: 16, marginBottom: 16, background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:12, boxShadow:'0 8px 24px rgba(15,23,42,0.06)' }}>
           <h3>Add Income</h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: 8 }}>
             <input 
@@ -256,7 +256,12 @@ const Income = () => {
               value={description} 
               onChange={(e) => setDescription(e.target.value)} 
             />
-            <button type="submit">Add Income</button>
+            <button type="submit" style={{
+              padding: '10px 16px',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700,
+              cursor: 'pointer', boxShadow: '0 10px 24px rgba(102,126,234,0.25)'
+            }}>Add Income</button>
           </div>
           <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -274,21 +279,18 @@ const Income = () => {
         {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
         {successMessage && <div style={{ color: 'green', marginBottom: '10px' }}>{successMessage}</div>}
 
-        <table className="table">
+        <table className="table" style={{ width:'100%', borderCollapse:'separate', borderSpacing:0, background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:12, boxShadow:'0 8px 24px rgba(15,23,42,0.06)' }}>
           <thead>
             <tr>
-              <th>Amount</th>
-              <th>Source</th>
-              <th>Date</th>
-              <th>Description</th>
-              <th>Type</th>
-              <th>Actions</th>
+              {['Amount','Source','Date','Description','Type','Actions'].map(h => (
+                <th key={h} style={{ textAlign:'left', padding:'12px 14px', background:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color:'#fff' }}>{h}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {incomes.map(income => (
               <tr key={income.id}>
-                <td>
+                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                   <input 
                     type="number" 
                     step="0.01" 
@@ -299,7 +301,7 @@ const Income = () => {
                     
                   />
                 </td>
-                <td>
+                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                   <input 
                     type="text" 
                     defaultValue={income.source} 
@@ -309,7 +311,7 @@ const Income = () => {
                     
                   />
                 </td>
-                <td>
+                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                   <input 
                     type="date" 
                     defaultValue={formatDateForInput(income.date)} 
@@ -319,7 +321,7 @@ const Income = () => {
                     
                   />
                 </td>
-                <td>
+                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                   <input 
                     type="text" 
                     defaultValue={income.description || ''} 
@@ -329,7 +331,7 @@ const Income = () => {
                     
                   />
                 </td>
-                <td>
+                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                   <span style={{ 
                     color: income.isRecurring ? '#28a745' : '#6c757d',
                     fontWeight: 'bold',
@@ -338,10 +340,10 @@ const Income = () => {
                     {income.isRecurring ? 'Recurring' : 'One-time'}
                   </span>
                 </td>
-                <td>
+                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                   <button 
                     onClick={() => deleteIncome(income.id)}
-                    style={{ backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}
+                    style={{ background: 'linear-gradient(135deg, #ff6b6b, #ee5a24)', color: 'white', border: 'none', padding: '6px 10px', borderRadius: 10, cursor: 'pointer' }}
                   >
                     Delete
                   </button>

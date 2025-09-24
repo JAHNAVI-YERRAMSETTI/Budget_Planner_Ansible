@@ -216,9 +216,9 @@ const Budgets = () => {
   return (
     <div>
       <UserNavBar onLogout={handleLogout} />
-      <div className="container">
+      <div className="container" style={{ background: '#ffffff', padding: 16 }}>
         <h2>Budget Goals</h2>
-        <form onSubmit={addBudgetGoal} className="card" style={{ padding: 12, marginBottom: 12 }}>
+        <form onSubmit={addBudgetGoal} className="card" style={{ padding: 16, marginBottom: 16, background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:12, boxShadow:'0 8px 24px rgba(15,23,42,0.06)' }}>
           <h3>Add Budget Goal</h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: 8 }}>
             <input
@@ -265,7 +265,12 @@ const Budgets = () => {
             />
           </div>
           <div style={{ marginTop: 8 }}>
-            <button type="submit">Add Goal</button>
+            <button type="submit" style={{
+              padding: '10px 16px',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700,
+              cursor: 'pointer', boxShadow: '0 10px 24px rgba(102,126,234,0.25)'
+            }}>Add Goal</button>
           </div>
         </form>
 
@@ -275,16 +280,12 @@ const Budgets = () => {
         {budgetGoals.length === 0 ? (
           <div>No budget goals yet. Add one above!</div>
         ) : (
-          <table className="table">
+          <table className="table" style={{ width:'100%', borderCollapse:'separate', borderSpacing:0, background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:12, boxShadow:'0 8px 24px rgba(15,23,42,0.06)' }}>
             <thead>
               <tr>
-                <th>Category</th>
-                <th>Target Amount</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Warning %</th>
-                <th>Status</th>
-                <th>Actions</th>
+                {['Category','Target Amount','Start Date','End Date','Warning %','Status','Actions'].map(h => (
+                  <th key={h} style={{ textAlign:'left', padding:'12px 14px', background:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color:'#fff' }}>{h}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -298,12 +299,12 @@ const Budgets = () => {
                 
                 return (
                   <tr key={goal.id}>
-                    <td>{categoryName}</td>
-                    <td>${(goal.monthlyLimit || 0).toLocaleString()}</td>
-                    <td>{goal.startDate || 'N/A'}</td>
-                    <td>{goal.endDate || 'N/A'}</td>
-                    <td>{warningThreshold}%</td>
-                    <td>
+                    <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>{categoryName}</td>
+                    <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>${(goal.monthlyLimit || 0).toLocaleString()}</td>
+                    <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>{goal.startDate || 'N/A'}</td>
+                    <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>{goal.endDate || 'N/A'}</td>
+                    <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>{warningThreshold}%</td>
+                    <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                       <span style={{ 
                         color: statusColor, 
                         fontWeight: 'bold',
@@ -314,10 +315,10 @@ const Budgets = () => {
                         {goal.exceeded ? 'Exceeded' : (isNearWarning ? 'Warning' : 'Active')}
                       </span>
                     </td>
-                    <td>
+                    <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
                       <button 
                         onClick={() => deleteBudgetGoal(goal.id)}
-                        style={{ backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}
+                        style={{ background: 'linear-gradient(135deg, #ff6b6b, #ee5a24)', color: 'white', border: 'none', padding: '6px 10px', borderRadius: 10, cursor: 'pointer' }}
                       >
                         Delete
                       </button>

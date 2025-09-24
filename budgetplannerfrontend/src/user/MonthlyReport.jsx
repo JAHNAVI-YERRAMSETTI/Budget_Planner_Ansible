@@ -272,10 +272,10 @@ const MonthlyReport = () => {
   return (
     <div>
       <UserNavBar onLogout={handleLogout} />
-      <div className="container">
+      <div className="container" style={{ background: '#ffffff', padding: 16 }}>
         <h2>Monthly Reports</h2>
         
-        <form onSubmit={generateReport} className="card" style={{ padding: 12, marginBottom: 12 }}>
+        <form onSubmit={generateReport} className="card" style={{ padding: 16, marginBottom: 16, background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:12, boxShadow:'0 8px 24px rgba(15,23,42,0.06)' }}>
           <h3>Generate New Report</h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
             <select 
@@ -299,7 +299,12 @@ const MonthlyReport = () => {
               value={selectedYear} 
               onChange={(e) => setSelectedYear(e.target.value)} 
             />
-            <button type="submit">Generate Report</button>
+            <button type="submit" style={{
+              padding: '10px 16px',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700,
+              cursor: 'pointer', boxShadow: '0 10px 24px rgba(102,126,234,0.25)'
+            }}>Generate Report</button>
           </div>
         </form>
 

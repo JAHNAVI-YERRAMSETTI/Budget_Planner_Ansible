@@ -50,65 +50,126 @@ const UserRegistration = () => {
   }
 
   return (
-    <div className="container">
-      <div className="card" style={{ maxWidth: 400, margin: '50px auto' }}>
-        <h2 style={{ textAlign: 'center', marginBottom: 24 }}>User Registration</h2>
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: 16 }}>
-            <label htmlFor="username">Username:</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-              maxLength={50}
-              style={{ width: '100%', marginTop: 4 }}
-            />
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      padding: '40px 16px'
+    }}>
+      <div style={{ width: '100%', maxWidth: 500, position: 'relative' }}>
+        <div style={{
+          position: 'absolute', top: -2, left: -2, right: -2, bottom: -2,
+          background: 'linear-gradient(45deg, #ffffff, #f8f9ff, #e8f0ff)',
+          borderRadius: 24, opacity: 0.3, filter: 'blur(8px)'
+        }} />
+
+        <div style={{
+          background: 'rgba(255,255,255,0.12)',
+          border: '1px solid rgba(255,255,255,0.25)',
+          boxShadow: '0 35px 80px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.2)',
+          borderRadius: 24,
+          padding: '28px 26px',
+          backdropFilter: 'blur(16px)',
+          position: 'relative',
+          zIndex: 1
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', marginBottom: 8 }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2l3 6 6 .9-4.5 4.2L17 20l-5-3-5 3 1.5-6.9L4 8.9 10 8l2-6z" fill="#ffffff" opacity="0.9"/>
+            </svg>
+            <h2 style={{
+              margin: 0,
+              fontWeight: 900,
+              fontSize: '1.6rem',
+              background: 'linear-gradient(135deg, #ffffff 0%, #f8f9ff 50%, #e8f0ff 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}>Create your account</h2>
           </div>
+          <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.9)', marginTop: 0, marginBottom: 20 }}>Start planning smarter in minutes.</p>
 
-          <div style={{ marginBottom: 16 }}>
-            <label htmlFor="email">Email:</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              maxLength={50}
-              style={{ width: '100%', marginTop: 4 }}
-            />
+          <form onSubmit={handleSubmit}>
+            <div style={{ marginBottom: 14 }}>
+              <label htmlFor="username" style={{ color: 'white', fontWeight: 700 }}>Username</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                required
+                maxLength={50}
+                style={{
+                  width: '100%', marginTop: 6, padding: '12px 14px', borderRadius: 12,
+                  border: '1px solid rgba(255,255,255,0.35)', background: 'rgba(255,255,255,0.15)', color: 'white', outline: 'none'
+                }}
+                onFocus={(e)=>{e.target.style.border='1px solid #ffffff'; e.target.style.background='rgba(255,255,255,0.22)'}}
+                onBlur={(e)=>{e.target.style.border='1px solid rgba(255,255,255,0.35)'; e.target.style.background='rgba(255,255,255,0.15)'}}
+              />
+            </div>
+
+            <div style={{ marginBottom: 14 }}>
+              <label htmlFor="email" style={{ color: 'white', fontWeight: 700 }}>Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                maxLength={50}
+                style={{
+                  width: '100%', marginTop: 6, padding: '12px 14px', borderRadius: 12,
+                  border: '1px solid rgba(255,255,255,0.35)', background: 'rgba(255,255,255,0.15)', color: 'white', outline: 'none'
+                }}
+                onFocus={(e)=>{e.target.style.border='1px solid #ffffff'; e.target.style.background='rgba(255,255,255,0.22)'}}
+                onBlur={(e)=>{e.target.style.border='1px solid rgba(255,255,255,0.35)'; e.target.style.background='rgba(255,255,255,0.15)'}}
+              />
+            </div>
+
+            <div style={{ marginBottom: 10 }}>
+              <label htmlFor="password" style={{ color: 'white', fontWeight: 700 }}>Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                maxLength={50}
+                style={{
+                  width: '100%', marginTop: 6, padding: '12px 14px', borderRadius: 12,
+                  border: '1px solid rgba(255,255,255,0.35)', background: 'rgba(255,255,255,0.15)', color: 'white', outline: 'none'
+                }}
+                onFocus={(e)=>{e.target.style.border='1px solid #ffffff'; e.target.style.background='rgba(255,255,255,0.22)'}}
+                onBlur={(e)=>{e.target.style.border='1px solid rgba(255,255,255,0.35)'; e.target.style.background='rgba(255,255,255,0.15)'}}
+              />
+            </div>
+
+            {error && <div style={{ background:'rgba(255,255,255,0.15)', color: '#fff', border:'1px solid rgba(255,255,255,0.35)', padding: 10, borderRadius: 10, marginBottom: 14, textAlign: 'center' }}>{error}</div>}
+
+            <button 
+              type="submit" 
+              disabled={loading} 
+              style={{
+                width: '100%', padding: '12px 16px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white',
+                border: 'none', borderRadius: 14, fontWeight: 800, cursor: 'pointer',
+                boxShadow: '0 10px 24px rgba(102,126,234,0.35)', transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+              }}
+              onMouseOver={(e)=>{e.target.style.transform='translateY(-2px)'; e.target.style.boxShadow='0 16px 30px rgba(118,75,162,0.45)'}}
+              onMouseOut={(e)=>{e.target.style.transform='translateY(0)'; e.target.style.boxShadow='0 10px 24px rgba(102,126,234,0.35)'}}
+            >
+              {loading ? 'Registering...' : 'Register'}
+            </button>
+          </form>
+
+          <div style={{ textAlign: 'center', marginTop: 14 }}>
+            <p style={{ color: 'rgba(255,255,255,0.9)' }}>Already have an account? <Link to="/user/login" style={{ color:'#fff', fontWeight:800, textDecoration:'none', borderBottom:'1px dashed rgba(255,255,255,0.8)' }}>Login here</Link></p>
           </div>
-
-          <div style={{ marginBottom: 16 }}>
-            <label htmlFor="password">Password:</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              maxLength={50}
-              style={{ width: '100%', marginTop: 4 }}
-            />
-          </div>
-
-          {error && <div style={{ color: 'black', marginBottom: 16, textAlign: 'center' }}>{error}</div>}
-
-          <button 
-            type="submit" 
-            disabled={loading} 
-            style={{ width: '100%', marginBottom: 16 }}
-          >
-            {loading ? 'Registering...' : 'Register'}
-          </button>
-        </form>
-
-        <div style={{ textAlign: 'center' }}>
-          <p>Already have an account? <Link to="/user/login">Login here</Link></p>
         </div>
       </div>
     </div>
