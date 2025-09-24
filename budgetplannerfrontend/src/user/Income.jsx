@@ -16,6 +16,8 @@ const Income = () => {
   const [incomeDate, setIncomeDate] = useState('')
   const [description, setDescription] = useState('')
   const [isRecurring, setIsRecurring] = useState(false)
+  const [filterMonth, setFilterMonth] = useState(() => new Date().toISOString().slice(0,7))
+  const [showAllMonths, setShowAllMonths] = useState(false)
 
   // Helper to format date for input (yyyy-MM-dd from backend)
   const formatDateForInput = (dateStr) => {
@@ -127,12 +129,11 @@ const Income = () => {
 
   // Helper to reload incomes
   const loadIncomes = async (userId, token) => {
-    const incomesResponse = await fetch(`${config.url}/incomes/user/${userId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    })
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    }
+    const incomesResponse = await fetch(`${config.url}/incomes/user/${userId}`, { headers })
     if (incomesResponse.ok) {
       const incomesData = await incomesResponse.json()
       setIncomes(incomesData)
@@ -220,7 +221,13 @@ const Income = () => {
     navigate('/user/login')
   }
 
-  const totalIncome = incomes.reduce((sum, income) => sum + Number(income.amount || 0), 0)
+  const visibleIncomes = incomes.filter((income) => {
+    if (showAllMonths || !filterMonth) return true
+    const d = new Date(income.date || income.incomeDate)
+    const ym = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`
+    return ym === filterMonth
+  })
+  const totalIncome = visibleIncomes.reduce((sum, income) => sum + Number(income.amount || 0), 0)
 
   return (
     <div>
@@ -283,6 +290,17 @@ const Income = () => {
         {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
         {successMessage && <div style={{ color: 'green', marginBottom: '10px' }}>{successMessage}</div>}
 
+        <div style={{ display:'flex', alignItems:'center', gap: 12, marginBottom: 12, flexWrap:'wrap' }}>
+          <label style={{ display:'flex', alignItems:'center', gap:8 }}>
+            Month:
+            <input type="month" value={filterMonth} disabled={showAllMonths} onChange={(e)=>setFilterMonth(e.target.value)} />
+          </label>
+          <label style={{ display:'flex', alignItems:'center', gap:8 }}>
+            <input type="checkbox" checked={showAllMonths} onChange={(e)=>setShowAllMonths(e.target.checked)} />
+            Show all months
+          </label>
+        </div>
+
         <table className="table" style={{ width:'100%', tableLayout:'fixed', borderCollapse:'separate', borderSpacing:'0 8px', background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:12, boxShadow:'0 8px 24px rgba(15,23,42,0.06)' }}>
           <colgroup>
             <col style={{ width: '15%' }} />
@@ -300,7 +318,7 @@ const Income = () => {
             </tr>
           </thead>
           <tbody>
-            {incomes.map(income => (
+            {visibleIncomes.map(income => (
               <tr key={income.id}>
                 <td style={{ padding:'6px 10px', borderTop:'1px solid #eef2f7' }}>
                   <input 

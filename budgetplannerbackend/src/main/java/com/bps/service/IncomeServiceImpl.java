@@ -39,9 +39,8 @@ public class IncomeServiceImpl implements IncomeService {
 
     @Override
     public List<Income> findByUserId(Long userId) {
-        LocalDate startOfMonth = LocalDate.now().withDayOfMonth(1);
-        LocalDate endOfMonth = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
-        return incomeRepository.findByUser_IdAndDateBetween(userId, startOfMonth, endOfMonth);
+        // Return all incomes for the user; frontend can filter by month
+        return incomeRepository.findByUser_Id(userId);
     }
 
     // NEW: Update

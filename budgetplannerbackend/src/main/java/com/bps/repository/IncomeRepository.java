@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface IncomeRepository extends JpaRepository<Income, Long> {
+    List<Income> findByUser_Id(Long userId);
     List<Income> findByUser_IdAndDateBetween(Long userId, LocalDate startDate, LocalDate endDate);
     
     @Query("SELECT i FROM Income i WHERE i.user.id = :userId AND i.date BETWEEN :startDate AND :endDate")

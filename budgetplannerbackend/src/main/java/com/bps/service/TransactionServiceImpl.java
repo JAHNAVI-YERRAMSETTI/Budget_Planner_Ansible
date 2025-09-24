@@ -65,9 +65,8 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<Transaction> findByUserId(Long userId) {
-        LocalDate startOfMonth = LocalDate.now().withDayOfMonth(1);
-        LocalDate endOfMonth = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
-        return transactionRepository.findByUser_IdAndDateBetween(userId, startOfMonth, endOfMonth);
+        // Return all transactions for the user; frontend can filter by month
+        return transactionRepository.findByUser_Id(userId);
     }
 
     @Override

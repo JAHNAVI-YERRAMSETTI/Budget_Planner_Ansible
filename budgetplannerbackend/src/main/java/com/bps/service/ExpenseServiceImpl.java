@@ -46,9 +46,8 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public List<Expense> findByUserId(Long userId) {
-        LocalDate startOfMonth = LocalDate.now().withDayOfMonth(1);
-        LocalDate endOfMonth = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
-        return expenseRepository.findByUser_IdAndExpenseDateBetween(userId, startOfMonth, endOfMonth);
+        // Return all expenses for the user; frontend can filter by month
+        return expenseRepository.findByUser_Id(userId);
     }
 
     @Override

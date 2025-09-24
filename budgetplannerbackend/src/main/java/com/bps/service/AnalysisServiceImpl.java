@@ -34,13 +34,15 @@ public class AnalysisServiceImpl implements AnalysisService {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
 
-            LocalDate now = LocalDate.now(); // 2025-09-21
-            LocalDate startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth()); // 2025-09-01
-            LocalDate endOfMonth = now.with(TemporalAdjusters.lastDayOfMonth());   // 2025-09-30
-            LocalDate startOfYear = now.with(TemporalAdjusters.firstDayOfYear());  // 2025-01-01
-            LocalDate startOfSixMonthsAgo = now.minusMonths(6).with(TemporalAdjusters.firstDayOfMonth()); // 2025-03-01
-            LocalDate startOfPreviousMonth = now.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth()); // 2025-08-01
-            LocalDate endOfPreviousMonth = now.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());   // 2025-08-31
+            // Set reportPeriod to first day of current month: only one report per-month
+            LocalDate reportPeriod = LocalDate.now().withDayOfMonth(1);
+
+            LocalDate startOfMonth = reportPeriod;
+            LocalDate endOfMonth = reportPeriod.with(TemporalAdjusters.lastDayOfMonth());
+            LocalDate startOfYear = reportPeriod.with(TemporalAdjusters.firstDayOfYear());
+            LocalDate startOfSixMonthsAgo = reportPeriod.minusMonths(6).with(TemporalAdjusters.firstDayOfMonth());
+            LocalDate startOfPreviousMonth = reportPeriod.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth());
+            LocalDate endOfPreviousMonth = reportPeriod.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
 
             List<Expense> currentExpenses = expenseRepository.findByUser_IdAndExpenseDateBetween(userId, startOfMonth, endOfMonth);
             List<Income> currentIncomes = incomeRepository.findByUser_IdAndDateBetween(userId, startOfMonth, endOfMonth);
@@ -160,9 +162,19 @@ public class AnalysisServiceImpl implements AnalysisService {
                 alertRepository.save(growthAlert);
             }
 
-            AnalysisReport report = new AnalysisReport();
-            report.setUser(user);
-            report.setReportDate(now);
+            // ---- FIX: Only one report per-user-per-month (reportPeriod = 1st of month) ----
+            Optional<AnalysisReport> existingReportOpt = analysisReportRepository.findByUser_IdAndReportDate(userId, reportPeriod);
+            AnalysisReport report;
+            if (existingReportOpt.isPresent()) {
+                report = existingReportOpt.get();
+            } else {
+                report = new AnalysisReport();
+                report.setUser(user);
+                report.setReportDate(reportPeriod);
+            }
+            // Make ABSOLUTELY SURE the field is always the 1st of month!
+            report.setReportDate(reportPeriod);
+
             report.setCategorySpending(categorySpending);
             report.setCategoryBudgets(categoryBudgets);
             report.setTotalSpent(totalExpense);
@@ -175,6 +187,7 @@ public class AnalysisServiceImpl implements AnalysisService {
             report.setHasTremendousGrowth(hasTremendousGrowth);
 
             return analysisReportRepository.save(report);
+
         } catch (Exception e) {
             throw new RuntimeException("Failed to generate analysis report: " + e.getMessage(), e);
         }
