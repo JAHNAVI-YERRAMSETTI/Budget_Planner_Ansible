@@ -219,7 +219,7 @@ const Expense = () => {
   return (
     <div>
       <UserNavBar onLogout={handleLogout} />
-      <div className="container" style={{ background: '#ffffff', padding: 16 }}>
+      <div className="container" style={{ background: '#ffffff', padding: 16, marginLeft: '248px', minHeight: '100vh' }}>
         <h2>Expenses</h2>
         
         

@@ -142,3 +142,7 @@ label {
     padding: 8px;
   }
 }
+
+/* Hide scrollbar for sidebar links while keeping scroll functionality */
+#user-sidebar-scroll::-webkit-scrollbar { width: 0; height: 0; }
+#user-sidebar-scroll { -ms-overflow-style: none; scrollbar-width: none; }

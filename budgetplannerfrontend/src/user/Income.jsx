@@ -225,12 +225,12 @@ const Income = () => {
   return (
     <div>
       <UserNavBar onLogout={handleLogout} />
-      <div className="container" style={{ background: '#ffffff', padding: 16 }}>
+      <div className="container" style={{ background: '#ffffff', padding: 16, marginLeft: '248px', minHeight: '100vh', overflowX: 'hidden' }}>
         <h2>Income</h2>
         
         <form onSubmit={addIncome} className="card" style={{ padding: 16, marginBottom: 16, background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:12, boxShadow:'0 8px 24px rgba(15,23,42,0.06)' }}>
           <h3>Add Income</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: 8 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, rowGap: 12 }}>
             <input 
               type="number" 
               step="0.01" 
@@ -238,32 +238,36 @@ const Income = () => {
               required 
               value={amount} 
               onChange={(e) => setAmount(e.target.value)} 
+              style={{ width: '100%', minWidth: 0, boxSizing: 'border-box' }}
             />
             <input 
               placeholder="Source" 
               required 
               value={source} 
               onChange={(e) => setSource(e.target.value)} 
+              style={{ width: '100%', minWidth: 0, boxSizing: 'border-box' }}
             />
             <input 
               type="date" 
               required 
               value={incomeDate} 
               onChange={(e) => setIncomeDate(e.target.value)} 
+              style={{ width: '100%', minWidth: 0, boxSizing: 'border-box' }}
             />
             <input 
               placeholder="Description" 
               value={description} 
               onChange={(e) => setDescription(e.target.value)} 
+              style={{ width: '100%', minWidth: 0, boxSizing: 'border-box' }}
             />
             <button type="submit" style={{
               padding: '10px 16px',
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700,
-              cursor: 'pointer', boxShadow: '0 10px 24px rgba(102,126,234,0.25)'
+              cursor: 'pointer', boxShadow: '0 10px 24px rgba(102,126,234,0.25)', minWidth: 180
             }}>Add Income</button>
           </div>
-          <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <input 
                 type="checkbox" 
@@ -279,18 +283,26 @@ const Income = () => {
         {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
         {successMessage && <div style={{ color: 'green', marginBottom: '10px' }}>{successMessage}</div>}
 
-        <table className="table" style={{ width:'100%', borderCollapse:'separate', borderSpacing:0, background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:12, boxShadow:'0 8px 24px rgba(15,23,42,0.06)' }}>
+        <table className="table" style={{ width:'100%', tableLayout:'fixed', borderCollapse:'separate', borderSpacing:'0 8px', background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:12, boxShadow:'0 8px 24px rgba(15,23,42,0.06)' }}>
+          <colgroup>
+            <col style={{ width: '15%' }} />
+            <col style={{ width: '20%' }} />
+            <col style={{ width: '18%' }} />
+            <col style={{ width: '27%' }} />
+            <col style={{ width: '10%' }} />
+            <col style={{ width: '10%' }} />
+          </colgroup>
           <thead>
             <tr>
               {['Amount','Source','Date','Description','Type','Actions'].map(h => (
-                <th key={h} style={{ textAlign:'left', padding:'12px 14px', background:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color:'#fff' }}>{h}</th>
+                <th key={h} style={{ textAlign:'left', padding:'10px 12px', background:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color:'#fff' }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {incomes.map(income => (
               <tr key={income.id}>
-                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
+                <td style={{ padding:'6px 10px', borderTop:'1px solid #eef2f7' }}>
                   <input 
                     type="number" 
                     step="0.01" 
@@ -298,40 +310,44 @@ const Income = () => {
                     onBlur={(e) => { handleRowUpdate('amount', Number(e.target.value), income); e.currentTarget.style.outline = 'none' }}
                     onKeyDown={(e) => e.key === 'Enter' && handleRowUpdate('amount', Number(e.target.value), income)}
                     onFocus={(e) => (e.currentTarget.style.outline = '2px solid #2563eb')} 
+                    style={{ width: '100%', height: 38, padding: '6px 10px', boxSizing: 'border-box', borderRadius: 8 }}
                     
                   />
                 </td>
-                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
+                <td style={{ padding:'6px 10px', borderTop:'1px solid #eef2f7' }}>
                   <input 
                     type="text" 
                     defaultValue={income.source} 
                     onBlur={(e) => { handleRowUpdate('source', e.target.value, income); e.currentTarget.style.outline = 'none' }}
                     onKeyDown={(e) => e.key === 'Enter' && handleRowUpdate('source', e.target.value, income)}
                     onFocus={(e) => (e.currentTarget.style.outline = '2px solid #2563eb')} 
+                    style={{ width: '100%', height: 38, padding: '6px 10px', boxSizing: 'border-box', borderRadius: 8 }}
                     
                   />
                 </td>
-                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
+                <td style={{ padding:'6px 10px', borderTop:'1px solid #eef2f7' }}>
                   <input 
                     type="date" 
                     defaultValue={formatDateForInput(income.date)} 
                     onBlur={(e) => { handleRowUpdate('date', e.target.value, income); e.currentTarget.style.outline = 'none' }}
                     onKeyDown={(e) => e.key === 'Enter' && handleRowUpdate('date', e.target.value, income)}
                     onFocus={(e) => (e.currentTarget.style.outline = '2px solid #2563eb')} 
+                    style={{ width: '100%', height: 38, padding: '6px 10px', boxSizing: 'border-box', borderRadius: 8 }}
                     
                   />
                 </td>
-                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
+                <td style={{ padding:'6px 10px', borderTop:'1px solid #eef2f7' }}>
                   <input 
                     type="text" 
                     defaultValue={income.description || ''} 
                     onBlur={(e) => { handleRowUpdate('description', e.target.value, income); e.currentTarget.style.outline = 'none' }}
                     onKeyDown={(e) => e.key === 'Enter' && handleRowUpdate('description', e.target.value, income)}
                     onFocus={(e) => (e.currentTarget.style.outline = '2px solid #2563eb')} 
+                    style={{ width: '100%', height: 38, padding: '6px 10px', boxSizing: 'border-box', borderRadius: 8 }}
                     
                   />
                 </td>
-                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
+                <td style={{ padding:'6px 10px', borderTop:'1px solid #eef2f7', whiteSpace: 'nowrap', verticalAlign: 'middle' }}>
                   <span style={{ 
                     color: income.isRecurring ? '#28a745' : '#6c757d',
                     fontWeight: 'bold',
@@ -340,10 +356,10 @@ const Income = () => {
                     {income.isRecurring ? 'Recurring' : 'One-time'}
                   </span>
                 </td>
-                <td style={{ padding:'10px 14px', borderTop:'1px solid #eef2f7' }}>
+                <td style={{ padding:'6px 10px', borderTop:'1px solid #eef2f7' }}>
                   <button 
                     onClick={() => deleteIncome(income.id)}
-                    style={{ background: 'linear-gradient(135deg, #ff6b6b, #ee5a24)', color: 'white', border: 'none', padding: '6px 10px', borderRadius: 10, cursor: 'pointer' }}
+                    style={{ background: 'linear-gradient(135deg, #ff6b6b, #ee5a24)', color: 'white', border: 'none', padding: '8px 10px', borderRadius: 8, cursor: 'pointer', width: '100%' }}
                   >
                     Delete
                   </button>

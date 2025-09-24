@@ -154,7 +154,7 @@ const Notifications = () => {
   return (
     <div>
       <UserNavBar onLogout={handleLogout} />
-      <div className="container">
+      <div className="container" style={{ marginLeft: '248px', padding: 16, background: '#ffffff', minHeight: '100vh' }}>
         <h2>Notifications</h2>
         
         {loading && <div>Loading...</div>}

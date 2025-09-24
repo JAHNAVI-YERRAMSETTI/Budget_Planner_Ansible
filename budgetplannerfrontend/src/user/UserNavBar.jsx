@@ -10,15 +10,17 @@ const UserNavBar = ({ onLogout }) => {
       top: 0,
       left: 0,
       height: '100vh',
-      width: '230px',
+      width: '248px',
       display: 'flex',
       flexDirection: 'column',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       color: 'white',
       boxShadow: '0 8px 22px rgba(0,0,0,0.15)',
       zIndex: 1000,
-      padding: '22px 14px 14px 16px',
-      justifyContent: 'flex-start'
+      boxSizing: 'border-box',
+      padding: '22px 16px 16px 16px',
+      justifyContent: 'flex-start',
+      minHeight: 0
     },
     brand: {
       fontWeight: 900,
@@ -34,23 +36,26 @@ const UserNavBar = ({ onLogout }) => {
       listStyle: 'none',
       margin: 0,
       padding: 0,
-      flex: 1
+      flex: 1,
+      overflowY: 'auto'
     },
     link: ({ isActive }) => ({
       color: '#fff',
-      padding: '10px 16px',
+      textDecoration: 'none',
+      padding: '12px 16px',
       borderRadius: 10,
-      marginBottom: '2px',
+      marginBottom: '4px',
       background: isActive ? 'rgba(255,255,255,0.16)' : 'transparent',
-      border: isActive ? '1px solid rgba(255,255,255,0.3)' : '1px solid transparent',
+      border: isActive ? '1px solid rgba(255,255,255,0.28)' : '1px solid transparent',
       display: 'block',
       fontWeight: isActive ? 'bold' : 'normal',
-      transition: 'background 0.2s'
+      transition: 'background 0.2s, filter 0.2s'
     }),
     logoutWrapper: {
       paddingTop: '8px',
       display: 'flex',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      marginTop: '8px'
     },
     logoutBtn: {
       color: '#fff',
@@ -66,9 +71,9 @@ const UserNavBar = ({ onLogout }) => {
   }
 
   return (
-    <nav style={styles.nav}>
+    <nav id="user-sidebar" style={styles.nav}>
       <div style={styles.brand}>My Budget</div>
-      <ul style={styles.links}>
+      <ul id="user-sidebar-scroll" style={styles.links}>
         <li><NavLink to="/user/dashboard" style={styles.link}>Dashboard</NavLink></li>
         <li><NavLink to="/user/budgets" style={styles.link}>Budgets</NavLink></li>
         <li><NavLink to="/user/expense" style={styles.link}>Expenses</NavLink></li>

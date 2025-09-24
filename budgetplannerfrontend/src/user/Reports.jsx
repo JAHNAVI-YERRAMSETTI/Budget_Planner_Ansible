@@ -158,7 +158,7 @@ const Reports = () => {
   return (
     <div>
       <UserNavBar onLogout={handleLogout} />
-      <div className="container" style={{ background: '#ffffff', padding: 16 }}>
+      <div className="container" style={{ background: '#ffffff', padding: 16, marginLeft: '248px', minHeight: '100vh' }}>
         <h2>Financial Reports</h2>
         
         {loading && <div>Loading...</div>}

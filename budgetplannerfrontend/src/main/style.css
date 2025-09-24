@@ -1,3 +1,6 @@
+/* Hide scrollbar for the user sidebar but keep it scrollable */
+#user-sidebar::-webkit-scrollbar { width: 0; height: 0; }
+#user-sidebar { -ms-overflow-style: none; scrollbar-width: none; }
 .navbar {
     display: flex;
     justify-content: space-between;

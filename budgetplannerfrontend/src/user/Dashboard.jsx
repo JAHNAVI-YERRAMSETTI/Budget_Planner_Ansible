@@ -124,7 +124,7 @@ const Dashboard = () => {
   return (
     <div>
       <UserNavBar onLogout={handleLogout} />
-      <div className="container" style={{ padding: 16, background: '#ffffff' }}>
+      <div className="container" style={{ padding: 16, background: '#ffffff', marginLeft: '248px', minHeight: '100vh' }}>
         <div>
         <h2 style={{ color: '#667eea', fontWeight: 'bold' /* matches purple from quick action buttons */, fontSize: '2rem' }}>
   Dashboard
