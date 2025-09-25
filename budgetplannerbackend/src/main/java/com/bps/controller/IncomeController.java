@@ -19,7 +19,7 @@ public class IncomeController {
     public ResponseEntity<Income> saveIncome(@RequestBody Income income) {
         Income saved = incomeService.saveIncome(income);
         return ResponseEntity.ok(saved);
-    }
+    } 
 
     @GetMapping("/{id}")
     public ResponseEntity<Income> getIncome(@PathVariable Long id) {
