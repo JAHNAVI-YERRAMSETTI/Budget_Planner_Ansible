@@ -12,7 +12,7 @@ import java.util.Map;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/api/budgetgoal")
+@RequestMapping("/budgetgoal")
 public class BudgetGoalController {
     @Autowired
     private BudgetGoalService budgetGoalService;
@@ -33,7 +33,7 @@ public class BudgetGoalController {
         return ResponseEntity.ok(goals);
     }
 
-    // Admin: get all budget goals (supports both /api/budgetgoal and /api/budgetgoal/all)
+    // Admin: get all budget goals (supports both /budgetgoal and /budgetgoal/all)
     @GetMapping({"", "/all"})
     public ResponseEntity<List<BudgetGoal>> getAllBudgetGoals() {
         return ResponseEntity.ok(budgetGoalService.getAllBudgetGoals());

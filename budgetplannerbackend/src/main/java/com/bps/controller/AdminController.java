@@ -16,7 +16,7 @@ import com.bps.model.Admin;
 import com.bps.service.AdminService;
 
 @RestController
-@RequestMapping("/api/admins")
+@RequestMapping("/admins")
 @CrossOrigin(origins = "*") // allow frontend to call backend
 public class AdminController {
 

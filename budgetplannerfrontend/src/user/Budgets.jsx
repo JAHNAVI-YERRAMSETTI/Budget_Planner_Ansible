@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import UserNavBar from './UserNavBar';
 import { useNavigate } from 'react-router-dom';
-import config from '../config';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Budgets = () => {
     const navigate = useNavigate();
@@ -42,12 +43,12 @@ const Budgets = () => {
             const token = localStorage.getItem('token') || '';
             if (!userId) throw new Error('User not logged in.');
 
-            const goalsUrl = `${config.url}/budgetgoal/user/${userId}`; 
+            const goalsUrl = `${API_URL}/budgetgoal/user/${userId}`; 
             
             const [catRes, goalsRes, expensesRes] = await Promise.all([
-                fetch(`${config.url}/categories`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                fetch(`${API_URL}/categories`, { headers: { 'Authorization': `Bearer ${token}` } }),
                 fetch(goalsUrl, { headers: { 'Authorization': `Bearer ${token}` } }),
-                fetch(`${config.url}/expenses/user/${userId}/all`, { headers: { 'Authorization': `Bearer ${token}` } })
+                fetch(`${API_URL}/expenses/user/${userId}/all`, { headers: { 'Authorization': `Bearer ${token}` } })
             ]);
 
             if (!catRes.ok) throw new Error('Failed to load categories.');
@@ -101,7 +102,7 @@ const Budgets = () => {
             const token = localStorage.getItem('token') || '';
             if (!userId) throw new Error('User not logged in.');
 
-            const response = await fetch(`${config.url}/budgetgoal`, {
+            const response = await fetch(`${API_URL}/budgetgoal`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ 
@@ -135,7 +136,7 @@ const Budgets = () => {
         
         try {
             const token = localStorage.getItem('token') || '';
-            const response = await fetch(`${config.url}/budgetgoal/${budgetGoalId}`, {
+            const response = await fetch(`${API_URL}/budgetgoal/${budgetGoalId}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
             });

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import config from '../config'
+
+const API_URL = import.meta.env.VITE_API_URL
 
 const UserRegistration = () => {
   const [formData, setFormData] = useState({
@@ -25,7 +26,7 @@ const UserRegistration = () => {
     setLoading(true)
 
     try {
-      const response = await fetch(`${config.url}/users/register`, {
+      const response = await fetch(`${API_URL}/users/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,7 +43,7 @@ const UserRegistration = () => {
       } else {
         setError(responseData.message || 'Registration failed')
       }
-    } catch (error) {
+    } catch {
       setError('Network error. Please try again.')
     } finally {
       setLoading(false)

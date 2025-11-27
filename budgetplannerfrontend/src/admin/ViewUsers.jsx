@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import config from '../config';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const ViewUsers = () => {
   const [users, setUsers] = useState([]);
@@ -12,14 +13,14 @@ const ViewUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`${config.url}/users`);
+      const response = await fetch(`${API_URL}/users`);
       if (response.ok) {
         const userData = await response.json();
         setUsers(userData);
       } else {
         setError('Failed to fetch users');
       }
-    } catch (error) {
+    } catch {
       setError('Network error');
     } finally {
       setLoading(false);
@@ -29,10 +30,10 @@ const ViewUsers = () => {
   const handleDeleteUser = async (userId) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        let response = await fetch(`${config.url}/users/${userId}`, { method: 'DELETE' });
+        let response = await fetch(`${API_URL}/users/${userId}`, { method: 'DELETE' });
         if (!response.ok) {
           // Fallback: some environments block DELETE; use POST /delete
-          response = await fetch(`${config.url}/users/${userId}/delete`, { method: 'POST' });
+          response = await fetch(`${API_URL}/users/${userId}/delete`, { method: 'POST' });
         }
 
         if (response.ok) {
@@ -41,7 +42,7 @@ const ViewUsers = () => {
         } else {
           alert('Failed to delete user');
         }
-      } catch (error) {
+      } catch {
         alert('Network error');
       }
     }

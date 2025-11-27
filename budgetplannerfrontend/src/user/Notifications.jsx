@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import UserNavBar from './UserNavBar'
 import { useNavigate } from 'react-router-dom'
-import config from '../config'
+
+const API_URL = import.meta.env.VITE_API_URL
 
 const Notifications = () => {
   const navigate = useNavigate()
@@ -22,19 +23,19 @@ const Notifications = () => {
         
         // Load alerts, budgets, and expenses
         const [alertsResponse, budgetsResponse, expensesResponse] = await Promise.all([
-          fetch(`${config.url}/alerts`, {
+          fetch(`${API_URL}/alerts`, {
             headers: {
               'Authorization': `Bearer ${user.id}`,
               'Content-Type': 'application/json'
             }
           }),
-          fetch(`${config.url}/budgetgoals/user/${user.id}`, {
+          fetch(`${API_URL}/budgetgoals/user/${user.id}`, {
             headers: {
               'Authorization': `Bearer ${user.id}`,
               'Content-Type': 'application/json'
             }
           }),
-          fetch(`${config.url}/expenses/user/${user.id}`, {
+          fetch(`${API_URL}/expenses/user/${user.id}`, {
             headers: {
               'Authorization': `Bearer ${user.id}`,
               'Content-Type': 'application/json'
@@ -68,7 +69,7 @@ const Notifications = () => {
 
   const markAsRead = async (alert) => {
     try {
-      const response = await fetch(`${config.url}/alerts/${alert.id}`, {
+      const response = await fetch(`${API_URL}/alerts/${alert.id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${user.id}`,

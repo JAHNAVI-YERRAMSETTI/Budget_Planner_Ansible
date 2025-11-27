@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import UserNavBar from './UserNavBar';
 import { useNavigate } from 'react-router-dom';
-import config from '../config';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const MonthlyReport = () => {
     const navigate = useNavigate();
@@ -24,7 +25,7 @@ const MonthlyReport = () => {
             if (!userId) throw new Error("User not logged in.");
 
             const [year, month] = filterMonth.split('-');
-            const url = `${config.url}/reports/user/${userId}/comprehensive?year=${year}&month=${month}`;
+            const url = `${API_URL}/reports/user/${userId}/comprehensive?year=${year}&month=${month}`;
 
             const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
             if (!response.ok) throw new Error(`HTTP Error: ${response.status} - No report data found for this month.`);
@@ -45,7 +46,7 @@ const MonthlyReport = () => {
     const handleExport = () => {
         const userId = user.id || user.userId;
         const [year, month] = filterMonth.split('-');
-        const exportUrl = `${config.url}/reports/user/${userId}/export?year=${year}&month=${month}`;
+        const exportUrl = `${API_URL}/reports/user/${userId}/export?year=${year}&month=${month}`;
         window.open(exportUrl, '_blank');
     };
 

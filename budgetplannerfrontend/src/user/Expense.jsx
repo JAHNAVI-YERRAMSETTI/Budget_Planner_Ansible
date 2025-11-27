@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import UserNavBar from './UserNavBar';
 import { useNavigate } from 'react-router-dom';
-import config from '../config';
 import { toast } from 'react-toastify';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Expense = () => {
     const navigate = useNavigate();
@@ -33,9 +34,9 @@ const Expense = () => {
             if (!userId) throw new Error('User not logged in.');
 
             const [catRes, expRes, goalRes] = await Promise.all([
-                fetch(`${config.url}/categories`, { headers: { 'Authorization': `Bearer ${token}` } }),
-                fetch(showAll ? `${config.url}/expenses/user/${userId}/all` : `${config.url}/expenses/user/${userId}?year=${filterMonth.split('-')[0]}&month=${filterMonth.split('-')[1]}`, { headers: { 'Authorization': `Bearer ${token}` } }),
-                fetch(`${config.url}/budgetgoal/user/${userId}`, { headers: { 'Authorization': `Bearer ${token}` } })
+                fetch(`${API_URL}/categories`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                fetch(showAll ? `${API_URL}/expenses/user/${userId}/all` : `${API_URL}/expenses/user/${userId}?year=${filterMonth.split('-')[0]}&month=${filterMonth.split('-')[1]}`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                fetch(`${API_URL}/budgetgoal/user/${userId}`, { headers: { 'Authorization': `Bearer ${token}` } })
             ]);
             
             if (!catRes.ok) throw new Error('Failed to load categories.');
@@ -73,7 +74,7 @@ const Expense = () => {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         const userId = user.id || user.userId;
         const token = localStorage.getItem('token') || '';
-        const res = await fetch(`${config.url}/expenses/user/${userId}/all`, { headers: {'Authorization': `Bearer ${token}`}});
+            const res = await fetch(`${API_URL}/expenses/user/${userId}/all`, { headers: {'Authorization': `Bearer ${token}`}});
         if (!res.ok) return;
         const allExpenses = await res.json();
         
@@ -109,7 +110,7 @@ const Expense = () => {
                 user: { id: userId }
             };
 
-            const response = await fetch(`${config.url}/expenses`, {
+            const response = await fetch(`${API_URL}/expenses`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) },
                 body: JSON.stringify(expensePayload)
@@ -136,7 +137,7 @@ const Expense = () => {
         if (!window.confirm("Are you sure?")) return;
         try {
             const token = localStorage.getItem('token') || '';
-            const response = await fetch(`${config.url}/expenses/${expenseId}`, {
+            const response = await fetch(`${API_URL}/expenses/${expenseId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });

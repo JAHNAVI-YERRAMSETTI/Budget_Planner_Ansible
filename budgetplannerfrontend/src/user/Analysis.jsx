@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import UserNavBar from './UserNavBar'
 import { useNavigate } from 'react-router-dom'
-import config from '../config'
+
+const API_URL = import.meta.env.VITE_API_URL
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -52,7 +53,7 @@ const Analysis = () => {
       try {
         setLoading(true)
         setError('')
-        const reportsResponse = await fetch(`${config.url}/analysis/all/${user.id}`, {
+        const reportsResponse = await fetch(`${API_URL}/analysis/all/${user.id}`, {
           headers: {
             'Authorization': `Bearer ${user.id}`,
             'Content-Type': 'application/json'
@@ -105,7 +106,7 @@ const Analysis = () => {
       setCategorySpending({})
     }
     try {
-      const response = await fetch(`${config.url}/analysis?userId=${user.id}`, {
+      const response = await fetch(`${API_URL}/analysis?userId=${user.id}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${user.id}`,
@@ -120,7 +121,7 @@ const Analysis = () => {
       setTimeout(() => setSuccessMessage(''), 3000)
       
       // Reload reports
-      const reportsResponse = await fetch(`${config.url}/analysis/all/${user.id}`, {
+      const reportsResponse = await fetch(`${API_URL}/analysis/all/${user.id}`, {
         headers: {
           'Authorization': `Bearer ${user.id}`,
           'Content-Type': 'application/json'

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import config from '../config'
+
+const API_URL = import.meta.env.VITE_API_URL
 
 const UserLogin = () => {
   const [formData, setFormData] = useState({
@@ -24,7 +25,7 @@ const UserLogin = () => {
     setLoading(true)
 
     try {
-      const response = await fetch(`${config.url}/users/login`, {
+      const response = await fetch(`${API_URL}/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

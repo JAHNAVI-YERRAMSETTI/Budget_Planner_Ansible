@@ -10,7 +10,7 @@ import java.util.List;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/api/incomes")
+@RequestMapping("/incomes")
 public class IncomeController {
     @Autowired
     private IncomeService incomeService;

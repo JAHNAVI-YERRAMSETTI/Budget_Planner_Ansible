@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import config from '../config'
+
+const API_URL = import.meta.env.VITE_API_URL
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({
@@ -29,7 +30,7 @@ const AdminLogin = () => {
         password: formData.password.trim()
       }
 
-      const response = await fetch(`${config.url}/admins/login`, {
+      const response = await fetch(`${API_URL}/admins/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

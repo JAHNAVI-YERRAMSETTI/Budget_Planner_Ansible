@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import UserNavBar from './UserNavBar'
 import { useNavigate } from 'react-router-dom'
-import config from '../config'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -15,6 +14,8 @@ import {
   LineElement,
 } from 'chart.js'
 import { Bar, Doughnut, Line } from 'react-chartjs-2'
+
+const API_URL = import.meta.env.VITE_API_URL
 
 ChartJS.register(
   CategoryScale,
@@ -42,7 +43,7 @@ const Reports = () => {
       try {
         setLoading(true)
         setError('')
-        const response = await fetch(`${config.url}/reports/user/${user.id}`, {
+        const response = await fetch(`${API_URL}/reports/user/${user.id}`, {
           headers: {
             'Authorization': `Bearer ${user.id}`,
             'Content-Type': 'application/json'

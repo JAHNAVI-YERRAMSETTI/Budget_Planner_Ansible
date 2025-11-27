@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import UserNavBar from './UserNavBar';
 import { useNavigate } from 'react-router-dom';
-import config from '../config';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Income = () => {
     const navigate = useNavigate();
@@ -40,10 +41,10 @@ const Income = () => {
 
             let url;
             if (showAll) {
-                url = `${config.url}/incomes/user/${userId}/all`;
+                url = `${API_URL}/incomes/user/${userId}/all`;
             } else {
                 const [year, month] = filterMonth.split('-');
-                url = `${config.url}/incomes/user/${userId}?year=${year}&month=${month}`;
+                url = `${API_URL}/incomes/user/${userId}?year=${year}&month=${month}`;
             }
 
             const response = await fetch(url, {
@@ -75,7 +76,7 @@ const Income = () => {
             const userId = user.id || user.userId;
             const token = localStorage.getItem('token') || '';
             
-            const response = await fetch(`${config.url}/incomes`, {
+            const response = await fetch(`${API_URL}/incomes`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) },
                 body: JSON.stringify({ 
@@ -114,7 +115,7 @@ const Income = () => {
             
             const updatedIncome = { ...income, [field]: value, user: { id: userId } };
 
-            const response = await fetch(`${config.url}/incomes/${income.id}`, {
+            const response = await fetch(`${API_URL}/incomes/${income.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) },
                 body: JSON.stringify(updatedIncome)
@@ -132,7 +133,7 @@ const Income = () => {
         if (!window.confirm("Are you sure you want to delete this income record?")) return;
         try {
             const token = localStorage.getItem('token') || '';
-            const response = await fetch(`${config.url}/incomes/${incomeId}`, {
+            const response = await fetch(`${API_URL}/incomes/${incomeId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });

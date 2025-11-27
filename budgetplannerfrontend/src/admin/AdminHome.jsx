@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AdminNavBar from './AdminNavBar'
 import ViewUsers from './ViewUsers'
-import config from '../config'
+
+const API_URL = import.meta.env.VITE_API_URL
 
 const AdminHome = () => {
   const [admin, setAdmin] = useState(null)
@@ -20,7 +21,7 @@ const AdminHome = () => {
   useEffect(() => {
     async function loadStats() {
       try {
-        const usersRes = await fetch(`${config.url}/users`)
+        const usersRes = await fetch(`${API_URL}/users`)
         const users = usersRes.ok ? await usersRes.json() : []
         setStats({
           totalUsers: Array.isArray(users) ? users.length : 0,

@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import UserNavBar from './UserNavBar';
 import { useNavigate } from 'react-router-dom';
-import config from '../config';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -31,10 +32,10 @@ const Dashboard = () => {
 
             // UPDATED: Removed the fetch call for '/reports' as it's no longer needed for trends
             const [monthIncomes, monthExpenses, allExpensesForAlerts, budgetsData] = await Promise.all([
-                fetch(`${config.url}/incomes/user/${userId}?year=${year}&month=${monthNum}`, { headers: authHeaders }).then(res => res.ok ? res.json() : []),
-                fetch(`${config.url}/expenses/user/${userId}?year=${year}&month=${monthNum}`, { headers: authHeaders }).then(res => res.ok ? res.json() : []),
-                fetch(`${config.url}/expenses/user/${userId}/all`, { headers: authHeaders }).then(res => res.ok ? res.json() : []),
-                fetch(`${config.url}/budgetgoal/user/${userId}/all`, { headers: authHeaders }).then(res => res.ok ? res.json() : [])
+                fetch(`${API_URL}/incomes/user/${userId}?year=${year}&month=${monthNum}`, { headers: authHeaders }).then(res => res.ok ? res.json() : []),
+                fetch(`${API_URL}/expenses/user/${userId}?year=${year}&month=${monthNum}`, { headers: authHeaders }).then(res => res.ok ? res.json() : []),
+                fetch(`${API_URL}/expenses/user/${userId}/all`, { headers: authHeaders }).then(res => res.ok ? res.json() : []),
+                fetch(`${API_URL}/budgetgoal/user/${userId}/all`, { headers: authHeaders }).then(res => res.ok ? res.json() : [])
             ]);
             
             const totalIncome = monthIncomes.reduce((sum, income) => sum + (income.amount || 0), 0);

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import UserNavBar from './UserNavBar'
 import { useNavigate } from 'react-router-dom'
-import config from '../config'
+
+const API_URL = import.meta.env.VITE_API_URL
 
 const Category = () => {
   const navigate = useNavigate()
@@ -33,7 +34,7 @@ const Category = () => {
           return;
         }
         
-        const response = await fetch(`${config.url}/categories`, {
+        const response = await fetch(`${API_URL}/categories`, {
           headers: {
             'Content-Type': 'application/json',
             ...(token && { 'Authorization': `Bearer ${token}` })
@@ -62,7 +63,7 @@ const Category = () => {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       const token = localStorage.getItem('token') || '';
       
-      const response = await fetch(`${config.url}/categories`, {
+      const response = await fetch(`${API_URL}/categories`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,14 +73,17 @@ const Category = () => {
           name
         })
       })
-      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      if (!response.ok) {
+        const message = await response.text()
+        throw new Error(message || `HTTP ${response.status}`)
+      }
       const result = await response.text()
       console.log('Add category result:', result)
       setSuccessMessage('Category added successfully!')
       setTimeout(() => setSuccessMessage(''), 3000)
       
       // Reload categories
-      const addCategoriesResponse = await fetch(`${config.url}/categories`, {
+      const addCategoriesResponse = await fetch(`${API_URL}/categories`, {
         headers: {
           'Content-Type': 'application/json',
           ...(token && { 'Authorization': `Bearer ${token}` })
@@ -104,7 +108,7 @@ const Category = () => {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       const token = localStorage.getItem('token') || '';
       
-      const response = await fetch(`${config.url}/categories/${category.id}`, {
+      const response = await fetch(`${API_URL}/categories/${category.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -112,12 +116,15 @@ const Category = () => {
         },
         body: JSON.stringify(category)
       })
-      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      if (!response.ok) {
+        const message = await response.text()
+        throw new Error(message || `HTTP ${response.status}`)
+      }
       const result = await response.text()
       console.log('Update category result:', result)
       
       // Reload categories
-      const updateCategoriesResponse = await fetch(`${config.url}/categories`, {
+      const updateCategoriesResponse = await fetch(`${API_URL}/categories`, {
         headers: {
           'Content-Type': 'application/json',
           ...(token && { 'Authorization': `Bearer ${token}` })
@@ -137,19 +144,22 @@ const Category = () => {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       const token = localStorage.getItem('token') || '';
       
-      const response = await fetch(`${config.url}/categories/${categoryId}`, {
+      const response = await fetch(`${API_URL}/categories/${categoryId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
           ...(token && { 'Authorization': `Bearer ${token}` })
         }
       })
-      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      if (!response.ok) {
+        const message = await response.text()
+        throw new Error(message || `HTTP ${response.status}`)
+      }
       const result = await response.text()
       console.log('Delete category result:', result)
       
       // Reload categories
-      const deleteCategoriesResponse = await fetch(`${config.url}/categories`, {
+      const deleteCategoriesResponse = await fetch(`${API_URL}/categories`, {
         headers: {
           'Content-Type': 'application/json',
           ...(token && { 'Authorization': `Bearer ${token}` })
